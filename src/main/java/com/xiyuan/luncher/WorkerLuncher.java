@@ -1,16 +1,13 @@
 package com.xiyuan.luncher;
 
 import com.xiyuan.cluster.node.Master;
+import com.xiyuan.cluster.node.Worker;
 import com.xiyuan.common.log.LogManager;
-import com.xiyuan.common.watcher.FileWatchers;
+import com.xiyuan.common.util.ClassUtil;
+import com.xiyuan.common.util.IpPortUtil;
 import com.xiyuan.config.AppInfo;
 import com.xiyuan.config.ClusterCfg;
-import com.xiyuan.cluster.node.Worker;
-import com.xiyuan.common.util.IpPortUtil;
-import com.xiyuan.spider.JSpiderMaster;
-import com.xiyuan.spider.JSpiderWorker;
 import org.slf4j.Logger;
-import sun.reflect.Reflection;
 
 import java.util.Map;
 import java.util.Set;
@@ -23,7 +20,7 @@ public class WorkerLuncher {
     private static Logger logger;
 
     public static void startWorker() {
-        AppInfo.setPath(Reflection.getCallerClass());
+        AppInfo.setPath(ClassUtil.getCallerClass());
         logger = LogManager.logger(Master.class);
 
         new Thread() {

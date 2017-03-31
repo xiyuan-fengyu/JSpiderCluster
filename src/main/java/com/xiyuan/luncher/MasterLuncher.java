@@ -2,13 +2,13 @@ package com.xiyuan.luncher;
 
 import com.xiyuan.cluster.node.Master;
 import com.xiyuan.common.log.LogManager;
+import com.xiyuan.common.util.ClassUtil;
 import com.xiyuan.common.util.IpPortUtil;
 import com.xiyuan.config.AppInfo;
 import com.xiyuan.config.ClusterCfg;
 import com.xiyuan.spider.JSpiderMaster;
 import com.xiyuan.webui.WebUI;
 import org.slf4j.Logger;
-import sun.reflect.Reflection;
 
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -25,7 +25,7 @@ public class MasterLuncher {
     private static Logger logger;
 
     public static void startMaster() {
-        AppInfo.setPath(Reflection.getCallerClass());
+        AppInfo.setPath(ClassUtil.getCallerClass());
         logger = LogManager.logger(Master.class);
 
         new Thread() {

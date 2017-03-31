@@ -74,7 +74,7 @@ public class AppInfo {
     }
 
     public static void setPath(Class<?> startFromClass) {
-        isMaster = Reflection.getCallerClass() == MasterLuncher.class;
+        isMaster = ClassUtil.getCallerClass() == MasterLuncher.class;
 
         String mianClassRoot = ClassUtil.getClassRoot(startFromClass);
         File mainClassRootDir = new File(mianClassRoot);

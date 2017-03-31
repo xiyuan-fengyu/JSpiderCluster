@@ -132,4 +132,20 @@ public class ClassUtil {
         }
     }
 
+    public static Class getCallerClass() {
+        StackTraceElement[] traces = new Throwable().getStackTrace();
+        for (int i = 2; i < traces.length; i++) {
+            StackTraceElement trace = traces[i];
+            if (!trace.getMethodName().matches("access\\$[0-9]+")) {
+                try {
+                    return Class.forName(trace.getClassName());
+                }
+                catch (Exception e) {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
 }
