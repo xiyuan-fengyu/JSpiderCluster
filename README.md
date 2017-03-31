@@ -4,7 +4,7 @@ Java + phantomjs 实现的一个分布式爬虫。
 
 ####快速起步
 1. 安装phantomjs，并配置环境变量  
-2. 从[这里](http://www.baidu.com)下载Hello World示例  
+2. 从[这里](https://github.com/xiyuan-fengyu/JSpider_HelloWorld)下载Hello World示例  
 3. 用IDE打开示例项目，将libs目录下的JSpiderCluster.jar添加为依赖  
 4. 运行com.xiyuan.helloworld.Luncher，可以在控制台最后看到 https://www.baidu.com 网页的title"百度一下，你就知道"
 5. 在浏览器中打开 http://localhost:9000/ 可以看到当前爬虫的工作情况，整个界面的功能将在后续做详细介绍  
