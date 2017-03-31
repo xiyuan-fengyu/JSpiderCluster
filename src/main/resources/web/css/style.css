@@ -1,0 +1,60 @@
+/*index start*/
+
+.editable {
+    color: #1f9fff;
+    cursor: pointer;
+}
+
+.normal {
+    color: #ffffff;
+}
+
+.success {
+    color: #0c86ff
+}
+
+.fail {
+    color: #ff7711
+}
+
+.onStartTaskSuccess[data-success='true'] {
+    color: #0c86ff
+}
+
+.onStartTaskSuccess[data-success='false'] {
+    color: #ff7711
+}
+
+.rerunOnStartTask,
+.restartPhantom,
+.newPhantom,
+.stopPhantom {
+    visibility: hidden;
+    color: #1f9fff;
+    cursor: pointer;
+}
+
+.stopPhantom {
+    margin-left: 20px;
+    color: #ff4b00;
+}
+
+.shutdown {
+    visibility: hidden;
+    cursor: pointer;
+}
+
+.onStartTaskTr:hover .rerunOnStartTask,
+.phantomTr:hover .restartPhantom,
+.phantomTr:hover .stopPhantom,
+table:hover .newPhantom,
+#master:hover .shutdown {
+    visibility: visible;
+}
+
+.js {
+    color: #32CD32;
+    cursor: pointer;
+}
+
+/*index end*/

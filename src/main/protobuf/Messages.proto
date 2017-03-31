@@ -1,0 +1,56 @@
+package com.xiyuan.cluster.msg;
+
+message Prt {
+
+    message PhantomStart {
+        required int32 port = 1;
+    }
+    optional PhantomStart phantomStart = 1;
+
+
+    message PhantomEnd {
+        required int32 port = 1;
+    }
+    optional PhantomEnd phantomEnd = 2;
+
+    message ShareFile {
+        required string relativePath = 1;
+        required string content = 2;
+    }
+
+    message ShareOnWorkerConnected {
+        repeated ShareFile shareFiles = 1;
+    }
+    optional ShareOnWorkerConnected shareOnWorkerConnected = 3;
+
+    message ShareOnFileChanged {
+        repeated ShareFile shareFiles = 1;
+    }
+    optional ShareOnFileChanged shareOnFileChanged = 4;
+
+    message RestartPhantomServer {
+        required int32 port = 1;
+    }
+    optional RestartPhantomServer restartPhantomServer = 5;
+
+    message NewPhantomServer {
+        required int32 port = 1;
+    }
+    optional NewPhantomServer newPhantomServer = 6;
+
+    message StopPhantomServer {
+        required int32 port = 1;
+    }
+    optional StopPhantomServer stopPhantomServer = 7;
+
+    message ScreenshotFile {
+        repeated ShareFile shareFiles = 1;
+    }
+    optional ScreenshotFile screenshotFile = 8;
+
+    message DownloadFile {
+        repeated ShareFile shareFiles = 1;
+    }
+    optional DownloadFile downloadFile = 9;
+
+}

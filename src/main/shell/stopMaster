@@ -1,0 +1,22 @@
+#!/bin/sh
+masterIp=""
+masterPort=""
+
+while read line
+do
+    line=$(echo $line | tr '\r' '\n')
+    line=${line[0]}
+    if [ `expr match "$line" "^cluster.master.host="` -gt 0 ]; then
+        arr=($(echo $line | tr '=' '\n'))
+        masterIp=${arr[1]}
+    elif [ `expr match "$line" "^cluster.master.netty.port="` -gt 0 ]; then
+        arr=($(echo $line | tr '=' '\n'))
+        masterPort=${arr[1]}
+    fi
+done < $JSPIDER_HOME/config/cluster.properties
+
+
+ssh $masterIp "
+            pid=\$(lsof -i:$masterPort | awk '{print \$2}' | grep '[0-9]\+')
+            kill -9 \$pid
+        "

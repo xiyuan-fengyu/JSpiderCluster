@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JSpiderCluster</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="keywords" content="JSpiderCluster">
+    <meta http-equiv="description" content="JSpiderCluster">
+
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+    <div id="clusterInfo" class="container">
+
+        <div class="col-md-12">
+            <h2 id="master">Master <span >{{has('master') ? master : ''}}</span> <small @click="showShutdownModal" class="shutdown">Shutdown</small></h2>
+        </div>
+
+        <div class="col-md-12">
+            <h3>
+                Overview
+            </h3>
+            <div class="col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Success</div>
+                    <div class="panel-body" style="color: #337ab7;">
+                        {{has('successTaskNum') ? successTaskNum : 0}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="panel panel-success">
+                    <div class="panel-heading">Running</div>
+                    <div class="panel-body" style="color: #3c763d;">
+                        {{has('runningTaskNum') ? runningTaskNum : 0}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="panel panel-danger">
+                    <div class="panel-heading">Fail</div>
+                    <div class="panel-body" style="color: #a94442;">
+                        {{has('failTaskNum') ? failTaskNum : 0}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="has('onStartTasks')" class="col-md-12">
+            <h3>
+                OnStartTask List
+            </h3>
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Url</th>
+                    <th>Js</th>
+                    <th>State</th>
+                    <th>Success</th>
+                    <th>Rerun</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(task, index) in onStartTasks" class="onStartTaskTr">
+                    <th scope="row">{{index + 1}}</th>
+                    <td>{{task.name}}</td>
+                    <td><a v-bind:href="task.url" target="_blank">{{task.url}}</a></td>
+                    <td @click="showDebugModal" v-bind:data-url="task.url" class="js" title="click to debug">{{task.js}}</td>
+                    <td>{{task.state}}</td>
+                    <td v-bind:data-success="task.success" class="onStartTaskSuccess">{{task.success}}</td>
+                    <td><span @click="rerunOnStartTask" v-bind:data-id="task.id" data-type="onStartTask" title="click to rerun the onStartTask" class="rerunOnStartTask glyphicon glyphicon-repeat" aria-hidden="true"></span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div v-if="has('onTimeTasks')" class="col-md-12">
+            <h3>
+                OnTimeTask List
+            </h3>
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Url</th>
+                    <th>Js</th>
+                    <th>Quartz Cron</th>
+                    <th>Next Execute Time</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(task, index) in onTimeTasks">
+                    <th scope="row">{{index + 1}}</th>
+                    <td>{{task.name}}</td>
+                    <td><a v-bind:href="task.url" target="_blank">{{task.url}}</a></td>
+                    <td @click="showDebugModal" v-bind:data-url="task.url" class="js" title="click to debug">{{task.js}}</td>
+                    <td @click="showEditModal" v-bind:data-id="task.id" data-type="onTimeTask" data-title="Edit the Quartz Cron" class="editable" title="click to edit">{{task.cron}}</td>
+                    <td>{{task.next}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div v-if="has('onMessageTasks')" class="col-md-12">
+            <h3>
+                OnMessageTask List
+            </h3>
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Queue</th>
+                    <th>Js</th>
+                    <th>Parallel</th>
+                    <th>Running</th>
+                    <th>Num</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(task, index) in onMessageTasks">
+                    <th scope="row">{{index + 1}}</th>
+                    <td>{{task.name}}</td>
+                    <td>{{task.queue}}</td>
+                    <td @click="showDebugModal" data-url="" v-bind:data-queue="task.queue" class="js" title="click to debug">{{task.js}}</td>
+                    <td @click="showEditModal" v-bind:data-id="task.id" data-type="onMessageTask" data-title="Edit the Parallel" class="editable" title="click to edit">{{task.parallel}}</td>
+                    <td>{{task.running}}</td>
+                    <td>{{task.num}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div v-if="has('workers')" class="col-md-12">
+            <div v-for="(worker, index) in workers" class="col-md-6">
+                <h3>Worker{{index + 1}} {{worker.address}}</h3>
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Port</th>
+                        <th>Task Num</th>
+                        <th>Refused Num</th>
+                        <th><span @click="newPhantom" v-bind:data-worker="worker.address" title="click to add a new phantom server" class="newPhantom glyphicon glyphicon-plus" aria-hidden="true"></span></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(phantom, indexP) in worker.phantoms"  class="phantomTr">
+                        <th scope="row">{{indexP + 1}}</th>
+                        <td>{{phantom.port}}</td>
+                        <td>{{phantom.running}}</td>
+                        <td>{{phantom.refused}}</td>
+                        <td>
+                            <span @click="restartPhantom" v-bind:data-worker="worker.address" v-bind:data-port="phantom.port" title="click to restart the phantom server" class="restartPhantom glyphicon glyphicon-repeat" aria-hidden="true"></span>
+                            <span @click="stopPhantom" v-bind:data-worker="worker.address" v-bind:data-port="phantom.port" title="click to stop the phantom server" class="stopPhantom glyphicon glyphicon-remove" aria-hidden="true"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="editModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">{{editModal.title}}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-inline">
+                            <div class="form-group">
+                                <label for="newValue">New Value</label>
+                                <input v-model="editModal.newValue" v-on:keyup.enter="saveChange" v-bind:placeholder="editModal.placeholder" type="text" class="form-control" id="newValue">
+                                <input v-bind:value="editModal.type" type="hidden" id="type">
+                                <input v-bind:value="editModal.taskId" type="hidden" id="taskId">
+                                <p class="form-control-static" v-bind:class="editModal.msgType" style="margin-left: 10px;">{{editModal.msg}}</p>
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancle</button>
+                        <button @click="saveChange" type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+
+        <div id="debugModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Debug Info</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+                            <div v-bind:class="debugModal.urlClass">
+                                <label for="newValue" class="col-sm-2 control-label">Url</label>
+                                <div class="col-sm-8">
+                                    <input v-model="debugModal.url" type="text" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="newValue" class="col-sm-2 control-label">Js</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static">{{debugModal.js}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancle</button>
+                        <button @click="startDebug" type="button" class="btn btn-primary">Debug</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <div id="shutdownModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Sure to shutdown the cluster?</h4>
+                    </div>
+                    <div v-if="has('shutdownProgress')" class="modal-body">
+                        <p v-for="item in shutdownProgress">{{item.message}}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancle</button>
+                        <button @click="shutdown" type="button" class="btn btn-primary">Sure</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+    </div>
+
+</body>
+
+<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+<script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<script src="http://cdn.bootcss.com/vue/2.2.1/vue.min.js"></script>
+<script src="js/index.js"></script>
+</html>

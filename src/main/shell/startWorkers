@@ -1,0 +1,62 @@
+#!/bin/sh
+masterIp=""
+masterPort=""
+masterAddress=""
+workerIndexs=()
+workers=()
+phantomPorts=()
+while read line
+do
+    line=$(echo $line | tr '\r' '\n')
+    line=${line[0]}
+    if [ `expr match "$line" "^cluster.master.host="` -gt 0 ]; then
+        arr=($(echo $line | tr '=' '\n'))
+        masterIp=${arr[1]}
+    elif [ `expr match "$line" "^cluster.master.netty.port="` -gt 0 ]; then
+        arr=($(echo $line | tr '=' '\n'))
+        masterPort=${arr[1]}
+    elif [ `expr match "$line" "^cluster.worker[0-9]\+.host="` -gt 0 ]; then
+        indexAndIpArr=($(echo $line | sed -nr "s/^cluster.worker([0-9]+).host=(.*)/\1 \2/p"))
+        index=${indexAndIpArr[0]}
+        ip=${indexAndIpArr[1]}
+        workerIndexs[$index]=$index
+        workers[$index]=$ip
+    elif [ `expr match "$line" "^cluster.worker[0-9]\+.phantom.ports="` -gt 0 ]; then
+        indexAndPortsArr=($(echo $line | sed -nr "s/^cluster.worker([0-9]+).phantom.ports=(.*)/\1 \2/p"))
+        index=${indexAndPortsArr[0]}
+        ports=${indexAndPortsArr[1]}
+        phantomPorts[$index]=$ports
+    fi
+done < $JSPIDER_HOME/config/cluster.properties
+
+startOneWorker=""
+if [ $# -gt 0 ]; then
+    startOneWorker="$1"
+fi
+
+masterAddress="$masterIp:$masterPort"
+for i in ${workerIndexs[*]}
+do
+    worker=${workers[$i]}
+    ports=${phantomPorts[$i]}
+    phantoms=$(echo $ports | sed 's/,/\\|/g')
+    if [ "$startOneWorker" = "" -o "$startOneWorker" = "$worker" ]; then
+            ssh $worker "
+            pids=(\$(netstat -anp | grep '\($phantoms\).*phantomjs' | awk '{print \$7}' | tr '/phantomjs' '\n' | grep '[0-9]\+'))
+            for pid in \${pids[*]}
+            do
+                kill -9 \$pid
+            done
+
+            workerPids=(\$(netstat -anp | grep '$masterAddress' | awk '{print \$7}' | tr '/java' '\n' | grep '[0-9]\+'))
+            for pid in \${workerPids[*]}
+            do
+                kill -9 \$pid
+            done
+
+            source /etc/profile
+            cd \$JSPIDER_HOME/bin
+            nohup java -jar JSpiderCluster.jar worker &
+        " > $JSPIDER_HOME/logs/worker.txt &
+    fi
+done

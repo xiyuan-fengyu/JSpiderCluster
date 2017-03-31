@@ -1,1 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
+/JSpiderCluster.iml
+/target/
+/src/test/
+/src/main/resources/META-INF/
+/out/
+/.idea/
