@@ -50,7 +50,7 @@ http://www.cnmiss.cn/?p=436
 3. Quartz Cron表达式不会写怎么办？  
 可以参考[这里](http://cron.qqe2.com/)
 
-4. $("一个A标签").click()不跳转页面？
-可以通过dom元素的click()来模拟点击,下面两种写法都可以(第一种需要引入jQuery)
-$("一个A标签")[0].click()
-document.querySelector("一个A标签").click();
+4. $("一个A标签").click()不跳转页面？  
+可以通过dom元素的click()来模拟点击,下面两种写法都可以(第一种需要引入jQuery)  
+``$("一个A标签")[0].click();``  
+``document.querySelector("一个A标签").click();``  
