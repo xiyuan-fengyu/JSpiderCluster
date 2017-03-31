@@ -69,9 +69,11 @@ OnMessageTask
 1. [模拟百度搜索的过程](https://github.com/xiyuan-fengyu/JSpider_BaiduSearch)  
 演示了如何在一个js文件中编写多个页面的抓取逻辑;但是强烈建议将这种需要在多个页面中完成的抓取任务分解为多个OnMessageTask任务来完成；  
   
+2. [截图和下载文件](https://github.com/xiyuan-fengyu/JSpider_Screenshot)  
+截图统一保存到master节点的工作目录下的screenshot文件夹中  
+下载文件统一保存到master节点的工作目录下的download文件夹中  
 
-
-
+3. 
 
 #### 如何部署
 
