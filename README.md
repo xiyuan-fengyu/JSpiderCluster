@@ -29,9 +29,6 @@ phantomjs执行实际的抓取任务，抓取逻辑采用js编写，可以方便
 添加断点，然后刷新就可以调试了。
 ![找到debug目标js](githubRes/debug.png)
 
-3. Quartz Cron表达式不会写怎么办？  
-可以参考[这里](http://cron.qqe2.com/)
-
 #### 例子
 
 #### 如何部署
@@ -48,4 +45,7 @@ http://www.cnmiss.cn/?p=436
 这样再去截图中文的页面就不会出现一堆的方框了。  
 
 
-2. 下载功能必须将config/phantom.json中page的webSecurityEnabled属性设置为false
+2. 下载功能必须将config/phantom.json中page的webSecurityEnabled属性设置为false  
+
+3. Quartz Cron表达式不会写怎么办？  
+可以参考[这里](http://cron.qqe2.com/)
