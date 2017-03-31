@@ -27,21 +27,15 @@ phantomjs执行实际的抓取任务，抓取逻辑采用js编写，可以方便
 在管理界面点击js弹出debug信息确认面板，如果是OnMessageTask类型的任务且队列里没有任务，则url需要自行填写；
 点击debug后，会自动打开一个新的tab页并跳转到目标url，然后执行js；按F12打开 开发者面板，定位到要调试的js，
 添加断点，然后刷新就可以调试了。
-![找到debug目标js](githubRes/debug.png)
+![找到debug目标js](githubRes/debug.png)  
 注意：js在Chrome中的运行效果和phantomjs并不完全一致。
 
 #### 使用说明
-1. 如何修改配置
-一共三种配置文件，都放在config目录下，如果不存在对应的配置文件则使用默认的内置配置。  
-config/cluster.properties 配置集群信息，默认为如下配置  
-```
-cluster.master.host=127.0.0.1
-cluster.master.netty.port=8000
-cluster.master.webui.port=9000
-
-cluster.worker0.host=127.0.0.1
-cluster.worker0.phantom.ports=20170,20171,20172
-```  
+1. 如何修改配置  
+一共三个配置文件，用户可以在项目的resources目录下创建config文件夹，然后在config下创建配置文件，
+用户自定义的配置会覆盖内置的配置。    
+集群配置，默认为如下配置  
+[src/main/resources/config/cluster.properties](src/main/resources/config/cluster.properties)  
 master节点只有一个，worker可以有多个，worker节点的配置方式为：
 ```
 cluster.worker非负数.host=worker节点ip
@@ -50,45 +44,11 @@ cluster.worker非负数.phantom.ports=phantomjs的端口列表
 所有节点的配置要保持一致。在本地开发调试的时候，可以不编写这个配置文件，系统会自动使用默认配置；
 正式部署的时候，如果要部署到多台机器，请把ip改为局域网ip。  
 
-config/log4j.properties 配置日志信息，默认配置为：
-```
-log4j.rootCategory=INFO,stdout
-log4j.appender.stdout=org.apache.log4j.DailyRollingFileAppender
-log4j.appender.stdout.Append=true
-log4j.appender.stdout.File=log.txt
-log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
-log4j.appender.stdout.layout.ConversionPattern= %d %p [%c] %m%n
-```
+日志配置，默认配置为：  
+[src/main/resources/config/log4j.properties](src/main/resources/config/log4j.properties)    
 
-config/phantom.json Phantomjs配置，默认配置为：
-```
-{
-  "cookiesFile": "../cache/phantom/cookie.txt",
-  "diskCacheEnabled": true,
-  "offlineStoragePath": "../cache/phantom/localStorage.txt",
-  "offlineStorageDefaultQuota": 65535,
-
-  "page": {
-    "javascriptEnabled": true,
-    "loadImages": false,
-    "localToRemoteUrlAccessEnabled": false,
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36",
-    "userName": "",
-    "password": "",
-    "XSSAuditingEnabled": false,
-    "webSecurityEnabled": false,
-    "resourceTimeout": 30000
-  },
-
-  "cookies": [
-    {
-      "domain": "baidu.com",
-      "path": "/",
-      "cookie": ""
-    }
-  ]
-}
-```
+Phantomjs配置，默认配置为：  
+[src/main/resources/config/phantom.json](src/main/resources/config/phantom.json)   
 cookies中可以添加多个一级域名的cookie；page中loadImages设置是否加载图片；  
 webSecurityEnabled设置是否检查跨域请求；  
 根节点中还支持很多其他phantomjs启动属性，可以参考[这里](http://phantomjs.org/api/command-line.html)
@@ -101,7 +61,17 @@ OnTimeTask
 OnMessageTask  
 任务队列驱动的任务。可以通过@AddToQueue注解 和 QueueManager.addToQueue方法 往特定的队列中添加任务。
 
-3. 
+3. 用户编写抓取逻辑的js可以使用的内置方法  
+参考 [src/main/resources/phantom/windowEx.js](src/main/resources/phantom/windowEx.js) 
+（这个js仅供调试插件调用，实际实现在[src/main/resources/phantom/windowEx.js](src/main/resources/phantom/PhantomServer.js)中）  
+
+#### 例子
+1. [模拟百度搜索的过程](https://github.com/xiyuan-fengyu/JSpider_BaiduSearch)  
+演示了如何在一个js文件中编写多个页面的抓取逻辑;但是强烈建议将这种需要在多个页面中完成的抓取任务分解为多个OnMessageTask任务来完成；  
+  
+
+
+
 
 #### 如何部署
 
