@@ -1,6 +1,7 @@
 package com.xiyuan.spider.manager;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xiyuan.common.util.GsonUtil;
 import com.xiyuan.common.util.ObjectCacheUtil;
@@ -118,6 +119,9 @@ public class QueueManager {
         }
         else if (obj instanceof String) {
             msg = new DefaultMessage((String) obj);
+        }
+        else if (obj instanceof JsonElement) {
+            msg = new DefaultMessage(((JsonElement) obj).getAsString());
         }
 
         if (msg == null) {

@@ -63,7 +63,7 @@ OnMessageTask
 
 3. 用户编写抓取逻辑的js可以使用的内置方法  
 参考 [src/main/resources/phantom/windowEx.js](src/main/resources/phantom/windowEx.js) 
-（这个js仅供调试插件调用，实际实现在[src/main/resources/phantom/windowEx.js](src/main/resources/phantom/PhantomServer.js)中）  
+（这个js仅供调试插件调用，实际实现在[src/main/resources/phantom/PhantomServer.js](src/main/resources/phantom/PhantomServer.js)中）  
 
 #### 例子
 1. [模拟百度搜索的过程](https://github.com/xiyuan-fengyu/JSpider_BaiduSearch)  
@@ -73,7 +73,10 @@ OnMessageTask
 截图统一保存到master节点的工作目录下的screenshot文件夹中  
 下载文件统一保存到master节点的工作目录下的download文件夹中  
 
-3. 
+3. [使用OnStartTask,OnTimeTask,OnMessageTask协同完成一个任务](https://github.com/xiyuan-fengyu/JSpider_TasksCoopertion)  
+演示了三种任务的协同工作，通过不同的Filter往任务队列里添加消息，以及通过parallelConfig动态设置OnMessageTask的并行数。
+
+4. 通过mybatis将结果存入数据库 TODO
 
 #### 如何部署
 
