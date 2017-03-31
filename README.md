@@ -14,7 +14,23 @@ phantomjs执行实际的抓取任务，抓取逻辑采用js编写，可以方便
 
 #### 管理界面的功能介绍
 ![管理界面说明](githubRes/webUI.png)
-1. 
+1. 集群关闭    
+鼠标移动到Master的地址后面会出现shutdown按钮，
+点击弹出确认面板，确认后会停止集群，
+并显示关闭过程的信息，系统会自动将集群的任务信息保存到cache/queueMap.cache文件中，
+下一次启动的时候，系统会自动加载这个文件并恢复之前的任务信息。
+可以手动删除这个文件来避免加载之前的任务信息，通过脚本或者命令直接杀死进程则不会保存任务信息。
+
+2. js调试功能  
+从[这里](https://github.com/xiyuan-fengyu/JSpiderDebugger)下载调试插件，仅适用于Chrome浏览器。
+在Chrome的扩展程序页面 chrome://extensions/ 点击 “加载已解压的扩展程序”安装插件。
+在管理界面点击js弹出debug信息确认面板，如果是OnMessageTask类型的任务且队列里没有任务，则url需要自行填写；
+点击debug后，会自动打开一个新的tab页并跳转到目标url，然后执行js；按F12打开 开发者面板，定位到要调试的js，
+添加断点，然后刷新就可以调试了。
+![找到debug目标js](githubRes/debug.png)
+
+3. Quartz Cron表达式不会写怎么办？  
+可以参考[这里](http://cron.qqe2.com/)
 
 #### 例子
 
