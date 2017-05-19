@@ -13,7 +13,6 @@ var tag_error = "{\"error\":";
 
 var flag_server_start = "server.start";
 
-
 var jspiderHome = system.args[2];
 var srcPath = system.args[3];
 fs.changeWorkingDirectory(jspiderHome);
@@ -63,8 +62,12 @@ sendFlag(flag_server_start);
 
 
 function prepareJs(curPage, params) {
-    return curPage.evaluate(function (taskId) {
+    return curPage.evaluate(function (userDatas) {
         //植入常用代码
+
+        //用户数据
+        window.userDatas = userDatas;
+
 
         //获取所有满足 条件 的链接，条件可以是一个函数或则正则表达式
         window.links = function (condition) {
@@ -221,7 +224,7 @@ function prepareJs(curPage, params) {
             loadScript(callback, srcAndChecker);
         };
 
-    }, params.taskId);
+    }, params.userDatas);
 }
 
 function onPageLoadFinished(page, params) {
@@ -359,6 +362,20 @@ function setPageListener(page, params) {
 }
 
 function crawl(js, timeout, url, res) {
+    //解析用户的额外数据
+    var userDatasStr = url.split("userDatas=")[1];
+    userDatasStr = decodeURIComponent(userDatasStr);
+    var userDatas;
+    try {
+        userDatas = JSON.parse(userDatasStr);
+    }
+    catch (e) {
+        userDatas = {};
+    }
+    if (userDatas.proxyIp && userDatas.proxyPort) {
+        phantom.setProxy(userDatas.proxyIp, userDatas.proxyPort);
+    }
+
     var page = webpage.create();
     var params = {
         taskId: new Date().getTime() + "_" + parseInt(Math.random() * 10000),
@@ -367,6 +384,7 @@ function crawl(js, timeout, url, res) {
         js: js,
         res: res,
         globalData: {},
+        userDatas: userDatas,
         pages: [page]
     };
 

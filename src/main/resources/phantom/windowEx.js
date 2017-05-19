@@ -2,6 +2,9 @@
  * Created by xiyuan_fengyu on 2017/3/24.
  */
 
+//用户数据
+window.userDatas = userDatas;
+
 //获取所有满足 条件 的链接，条件可以是一个函数或则正则表达式
 window.links = function (condition) {
     var arr = [];
