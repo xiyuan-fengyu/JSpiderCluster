@@ -22,6 +22,7 @@ public class ProxyUtil {
             Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(ip, port));
             HttpURLConnection connection = (HttpURLConnection) url.openConnection(proxy);
             connection.setConnectTimeout(timeout);
+//            connection.setRequestProperty("");
             connection.connect();
             return connection.getResponseCode() == 200 || "OK".equals(connection.getResponseMessage());
         } catch (IOException e) {
@@ -38,6 +39,9 @@ public class ProxyUtil {
                 int port = Integer.parseInt(split[1]);
                 if (valid(ip, port)) {
                     System.out.println(proxy);
+                }
+                else {
+                    System.err.println("BAD\t" + proxy);
                 }
             }
         } catch (IOException e) {
