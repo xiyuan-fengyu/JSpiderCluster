@@ -45,6 +45,19 @@ public class DefaultMessage implements Message {
         addUserData("proxyPort", port);
     }
 
+    public void setProxy(String proxy) {
+        if (proxy != null) {
+            try {
+                String[] split = proxy.split(":");
+                addUserData("proxyIp", split[0]);
+                addUserData("proxyPort", Integer.parseInt(split[1]));
+            }
+            catch (Exception e) {
+                System.err.println("代理格式有误：" + proxy);
+            }
+        }
+    }
+
     @Override
     public String url() {
         try {

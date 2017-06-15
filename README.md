@@ -78,6 +78,9 @@ OnMessageTask
 
 4. 通过mybatis将结果存入数据库 TODO
 
+5. [创建动态代理任务](https://github.com/xiyuan-fengyu/JSpider_ProxyTask)  
+演示了如何创建动态代理任务，适用场景：网站对ip的访问频率有限制的情况；这个示例中并不存在ip访问频率的问题。
+
 #### 如何部署
 
 #### FAQ  
