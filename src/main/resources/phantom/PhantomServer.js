@@ -358,6 +358,7 @@ function setPageListener(page, params) {
                     var c = xhr.response.charCodeAt(i);
                     byteStr += String.fromCharCode(c & 0xff);
                 }
+                window.downloadFinish++;
                 return [byteStr, typeof window.download.onProgess == "function"];
             }, json.download);
             fs.write("download/" + json.savePath, result[0], "b");
