@@ -68,6 +68,16 @@ function prepareJs(curPage, params) {
         //用户数据
         window.userDatas = userDatas;
 
+        //发送消息给phantom, msg 必须是字符串
+        window.sendMsgToPhantom = function (msg) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://localhost/sendMsgToPhantom", true);
+            xhr.send(msg);
+        };
+
+        window.console.log = function () {
+            sendMsgToPhantom(JSON.stringify(arguments));
+        };
 
         //获取所有满足 条件 的链接，条件可以是一个函数或则正则表达式
         window.links = function (condition) {
@@ -91,7 +101,7 @@ function prepareJs(curPage, params) {
 
         //截图
         window.screenshot = function (picName, selector, quality) {
-            console.log(JSON.stringify({
+            sendMsgToPhantom(JSON.stringify({
                 screenshot: picName || "screenshot.jpeg",
                 quality: quality || 100,
                 selector: selector
@@ -101,7 +111,7 @@ function prepareJs(curPage, params) {
         //下载
         window.download = function (url, savePath) {
             url += (url.match("\\?") ? "&" : "?") + "fileDownload=true";
-            console.log(JSON.stringify({
+            sendMsgToPhantom(JSON.stringify({
                 download: url,
                 savePath: savePath
             }));
@@ -109,14 +119,14 @@ function prepareJs(curPage, params) {
 
         //返回结果
         window.sendResult = function(obj) {
-            console.log(JSON.stringify({
+            sendMsgToPhantom(JSON.stringify({
                 return: obj
             }));
         };
 
         //返回错误
         window.sendError = function(error, msg) {
-            console.log(JSON.stringify({
+            sendMsgToPhantom(JSON.stringify({
                 error: error,
                 msg: msg,
                 url: location.href
@@ -259,9 +269,11 @@ function onPageLoadFinished(page, params) {
 }
 
 function setPageListener(page, params) {
-    if (phantom.pageSettings && phantom.pageSettings.abortImgRequest) {
-        //阻止图片请求（根据url和img元素的src来匹配，所以并不能保证所有的图片请求被拦截）
-        page.onResourceRequested = function(requestData, networkRequest) {
+    //由于有些网站重写了console，导致console.log失效，所以injectJs通过发送请求和拦截请求的方式向phatntomjs传递消息
+    //阻止图片请求（根据url和img元素的src来匹配，所以并不能保证所有的图片请求被拦截）
+    page.onResourceRequested = function(requestData, networkRequest) {
+        if (phantom.pageSettings && phantom.pageSettings.abortImgRequest) {
+            //图片请求过滤
             var lowerCaseUrl = requestData.url.toLowerCase();
             var match = lowerCaseUrl.match("\\.(jpg|jpeg|png|bmp|gif|ico)");
             if (lowerCaseUrl.indexOf("filedownload=true") > -1) {
@@ -287,8 +299,13 @@ function setPageListener(page, params) {
                     networkRequest.abort();
                 }
             }
-        };
-    }
+        }
+
+        if (requestData.url.startsWith("http://localhost/sendMsgToPhantom")) {
+            page.onConsoleMessage(requestData.postData);
+            networkRequest.abort();
+        }
+    };
 
     page.onConsoleMessage = function(msg) {
         println(msg.substring(0, Math.min(500, msg.length)));
