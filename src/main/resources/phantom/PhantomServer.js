@@ -109,19 +109,13 @@ function prepareJs(curPage, params) {
         };
 
         //下载
-        window.downloadTotal = 0;
-        window.downloadFinish = 0;
-
         window.download = function (url, savePath) {
-            downloadTotal++;
             url += (url.match("\\?") ? "&" : "?") + "fileDownload=true";
             sendMsgToPhantom(JSON.stringify({
                 download: url,
                 savePath: savePath
             }));
         };
-        //用户可以自定义下载进度的回调
-        window.download.onProgess = null;
 
         //返回结果
         window.sendResult = function(obj) {
@@ -347,7 +341,7 @@ function setPageListener(page, params) {
         }
         else if (msg.substring(0, tag_download.length) == tag_download) {
             var json = JSON.parse(msg);
-            var result = page.evaluate(function(url) {
+            var response = page.evaluate(function(url) {
                 var xhr = new XMLHttpRequest();
                 xhr.overrideMimeType('text/plain; charset=x-user-defined');
                 xhr.open("GET", url, false);
@@ -358,15 +352,9 @@ function setPageListener(page, params) {
                     var c = xhr.response.charCodeAt(i);
                     byteStr += String.fromCharCode(c & 0xff);
                 }
-                window.downloadFinish++;
-                return [byteStr, typeof window.download.onProgess == "function"];
+                return byteStr;
             }, json.download);
-            fs.write("download/" + json.savePath, result[0], "b");
-            if (result[1]) {
-                page.evaluate(function(url) {
-                    window.download.onProgess(window.downloadTotal, window.downloadFinish);
-                });
-            }
+            fs.write("download/" + json.savePath, response, "b");
         }
 
     };
