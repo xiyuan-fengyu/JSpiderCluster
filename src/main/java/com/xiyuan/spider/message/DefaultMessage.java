@@ -3,9 +3,11 @@ package com.xiyuan.spider.message;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import java.io.ObjectInputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 
 /**
  * Created by xiyuan_fengyu on 2017/2/17.
@@ -20,7 +22,7 @@ public class DefaultMessage implements Message {
 
     private static final Gson gson = new Gson();
 
-    private JsonObject userDatas = new JsonObject();
+    private HashMap<String, Object> userDatas = new HashMap<>();
 
     public DefaultMessage(String url) {
         this.url = url;
@@ -33,7 +35,7 @@ public class DefaultMessage implements Message {
 
     public <T> void addUserData(String key, T t) {
         if (key != null && t != null) {
-            userDatas.add(key, gson.toJsonTree(t));
+            userDatas.put(key, t);
         }
     }
 
@@ -61,7 +63,7 @@ public class DefaultMessage implements Message {
     @Override
     public String url() {
         try {
-            return url + (url.matches(".*\\?.*?=.*?") ? "&" : "?") + "userDatas=" + URLEncoder.encode(userDatas.toString(), "UTF-8");
+            return url + (url.matches(".*\\?.*?=.*?") ? "&" : "?") + "userDatas=" + URLEncoder.encode(gson.toJson(userDatas), "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
