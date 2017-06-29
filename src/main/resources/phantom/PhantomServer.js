@@ -231,7 +231,10 @@ function prepareJs(curPage, params) {
             srcAndChecker[src] = function() {
                 return typeof jQuery == "undefined";
             };
-            loadScript(callback, srcAndChecker);
+            loadScript(function () {
+                window.$ = jQuery;
+                callback();
+            }, srcAndChecker);
         };
 
     }, params.userDatas);
