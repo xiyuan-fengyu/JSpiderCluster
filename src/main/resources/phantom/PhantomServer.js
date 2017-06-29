@@ -75,10 +75,6 @@ function prepareJs(curPage, params) {
             xhr.send(msg);
         };
 
-        window.console.log = function () {
-            sendMsgToPhantom(JSON.stringify(arguments));
-        };
-
         //获取所有满足 条件 的链接，条件可以是一个函数或则正则表达式
         window.links = function (condition) {
             var arr = [];
