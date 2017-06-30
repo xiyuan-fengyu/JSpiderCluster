@@ -7,6 +7,8 @@ import java.io.Serializable;
  */
 public interface Message extends Serializable, Comparable<Message> {
 
+    String key();
+
     String url();
 
     int getPriority();

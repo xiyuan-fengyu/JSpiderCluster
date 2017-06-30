@@ -17,25 +17,21 @@ public class BloonFilter implements Filter {
 
     private final int[] seeds = {7, 11, 13, 31, 37, 61};
 
-    protected String key(Message msg) {
-        return msg.url();
-    }
-
     @Override
     public void setExisted(Message msg) {
-        String url = key(msg);
+        String key = msg.key();
         for (int seed: seeds) {
-            bits.set(hash(url, defaultSize, seed));
+            bits.set(hash(key, defaultSize, seed));
         }
     }
 
     @Override
     public boolean isExisted(Message msg) {
-        String url = key(msg);
-        if (url == null) return false;
+        String key = msg.key();
+        if (key == null) return false;
 
         for (int seed: seeds) {
-            if (!bits.get(hash(url, defaultSize, seed))) {
+            if (!bits.get(hash(key, defaultSize, seed))) {
                 return false;
             }
         }

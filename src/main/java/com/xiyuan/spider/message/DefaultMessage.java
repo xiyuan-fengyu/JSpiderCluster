@@ -16,6 +16,8 @@ public class DefaultMessage implements Message {
 
     private static final long serialVersionUID = -7928547442288463790L;
 
+    private String key;
+
     private String url;
 
     private int priority;
@@ -25,11 +27,12 @@ public class DefaultMessage implements Message {
     private HashMap<String, Object> userDatas = new HashMap<>();
 
     public DefaultMessage(String url) {
-        this.url = url;
+        this(url, url, 0);
     }
 
-    public DefaultMessage(String url, int priority) {
+    public DefaultMessage(String url, String key, int priority) {
         this.url = url;
+        this.key = key;
         this.priority = priority;
     }
 
@@ -58,6 +61,11 @@ public class DefaultMessage implements Message {
                 System.err.println("代理格式有误：" + proxy);
             }
         }
+    }
+
+    @Override
+    public String key() {
+        return key;
     }
 
     @Override
