@@ -108,7 +108,10 @@ public class FileUtil {
         File dir = file.getParentFile();
         if (dir != null && (dir.exists() || dir.mkdirs())) {
             try {
-                if (!file.exists() && StandardOpenOption.APPEND == openOption) {
+                if (file.exists() && openOption == StandardOpenOption.CREATE) {
+                    file.delete();
+                }
+                if (!file.exists() || StandardOpenOption.APPEND != openOption) {
                     file.createNewFile();
                 }
 
