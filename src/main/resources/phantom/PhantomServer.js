@@ -356,7 +356,10 @@ function setPageListener(page, params) {
     };
     page.onError = function(msg, trace) {
         if (trace && trace.length > 0 ) {
-            var msgStack = [msg];
+            var msgStack = [
+                "Error in page: " + page.url,
+                msg
+            ];
             trace.forEach(function(t) {
                 msgStack.push(t.file + ': ' + t.line + (t.function ? ' (in function "' + t.function +'")' : ''));
             });
