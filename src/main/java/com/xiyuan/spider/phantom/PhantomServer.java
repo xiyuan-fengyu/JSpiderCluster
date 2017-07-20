@@ -5,10 +5,9 @@ import com.xiyuan.common.util.FileUtil;
 import com.xiyuan.config.AppInfo;
 import org.slf4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 /**
  * Created by xiyuan_fengyu on 2017/2/16.
@@ -40,7 +39,7 @@ public class PhantomServer {
                 public void run() {
                     Runtime rt = Runtime.getRuntime();
                     try {
-                        process = rt.exec("phantomjs --config=" + AppInfo.getConfigPath() + "/phantom.json " + phantomJsServerJsPath + " " + port + " " + AppInfo.getJspiderHome() + " " +  AppInfo.getSrcPath());
+                        process = rt.exec("phantomjs --config=" + phantomConfigPath + " " + phantomJsServerJsPath + " " + port + " " + AppInfo.getJspiderHome() + " " +  AppInfo.getSrcPath());
                         InputStream in = process.getInputStream();
                         BufferedReader br = new BufferedReader(new InputStreamReader(in));
                         String temp;
@@ -109,6 +108,20 @@ public class PhantomServer {
 
         void onStop(PhantomServer server);
 
+    }
+
+    private static final String phantomConfigPath = AppInfo.getConfigPath() + "/phantom.json";
+
+    static {
+        File configFile = new File(phantomConfigPath);
+        if (!configFile.exists()) {
+            configFile.getParentFile().mkdirs();
+            try {
+                Files.copy(FileUtil.class.getClassLoader().getResourceAsStream("config/phantom.json"), configFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private static final String phantomJsServerJsPath = FileUtil.getAbsPathAndCopyIfInJar("phantom/PhantomServer.js");
