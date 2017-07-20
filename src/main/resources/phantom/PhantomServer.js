@@ -384,20 +384,22 @@ function setPageListener(page, params) {
 function crawl(js, timeout, url, res) {
     //解析用户的额外数据
     var splitArr = url.split("userDatas=");
-    var userDatasStr = splitArr[1];
-    userDatasStr = decodeURIComponent(userDatasStr);
     var userDatas;
-    try {
-        userDatas = JSON.parse(userDatasStr);
+    if (splitArr.length > 1) {
+        var userDatasStr = splitArr[1];
+        userDatasStr = decodeURIComponent(userDatasStr);
+        try {
+            userDatas = JSON.parse(userDatasStr);
+        }
+        catch (e) {
+            userDatas = {};
+        }
+        if (userDatas.proxyIp && userDatas.proxyPort) {
+            phantom.setProxy(userDatas.proxyIp, userDatas.proxyPort);
+        }
+        //清除url中的userDatas部分
+        url = splitArr[0].substring(0, splitArr[0].length - 1);
     }
-    catch (e) {
-        userDatas = {};
-    }
-    if (userDatas.proxyIp && userDatas.proxyPort) {
-        phantom.setProxy(userDatas.proxyIp, userDatas.proxyPort);
-    }
-    //清除url中的userDatas部分
-    url = splitArr[0].substring(0, splitArr[0].length - 1);
 
     var page = webpage.create();
     var params = {

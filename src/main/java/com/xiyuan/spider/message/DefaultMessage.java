@@ -70,6 +70,10 @@ public class DefaultMessage implements Message {
 
     @Override
     public String url() {
+        if (userDatas.isEmpty()) {
+            return url;
+        }
+
         try {
             return url + (url.matches(".*\\?.*?=.*?") ? "&" : "?") + "userDatas=" + URLEncoder.encode(gson.toJson(userDatas), "UTF-8");
         } catch (UnsupportedEncodingException e) {
