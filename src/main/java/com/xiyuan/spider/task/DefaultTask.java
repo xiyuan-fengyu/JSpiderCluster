@@ -1,9 +1,11 @@
 package com.xiyuan.spider.task;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xiyuan.cluster.controller.MasterController;
 import com.xiyuan.common.log.LogManager;
+import com.xiyuan.common.util.ClassUtil;
 import com.xiyuan.common.util.GsonUtil;
 import com.xiyuan.common.util.HttpUtil;
 import com.xiyuan.config.AppInfo;
@@ -79,7 +81,13 @@ public class DefaultTask {
 
                         Object res;
                         try {
-                            res = callbackMethod.invoke(callbackObject, url, json.get("return"));
+                            Object resultObj = ClassUtil.jsonEleTranslate(json.get("return"), callbackMethod.getParameterTypes()[1]);
+                            if (callbackMethod.getParameterTypes().length == 2) {
+                                res = callbackMethod.invoke(callbackObject, url, resultObj);
+                            }
+                            else {
+                                res = callbackMethod.invoke(callbackObject, url, resultObj, json.get("status").getAsJsonObject());
+                            }
                         }
                         catch (Exception e) {
                             res = null;

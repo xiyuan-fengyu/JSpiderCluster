@@ -236,13 +236,14 @@ function prepareJs(curPage, params) {
     }, params.userDatas);
 }
 
-function onPageLoadFinished(page, params) {
-    if (params.status != "success") {
+function onPageLoadFinished(page, params, status) {
+    params.status[page.targetUrl] = [status, new Date().getTime() - page.startLoadTime];
+    if (status != "success") {
         crawlResponse({
             error: "OpenFailed",
             msg: "fail to load this page",
-            url: page.url,
-            original: params.original != page.url ? params.original : null
+            url: page.targetUrl,
+            original: params.original != page.targetUrl ? params.original : null
         }, params);
     }
     else if (params.js) {
@@ -257,10 +258,10 @@ function onPageLoadFinished(page, params) {
             if (phantom.pageSettings) {
                 newPage.settings = phantom.pageSettings;
             }
-            newPage.onLoadFinished = function(status) {
+            newPage.onLoadFinished = function(status1) {
                 params.pages.push(newPage);
-                params.status = status;
-                onPageLoadFinished(newPage, params);
+                newPage.targetUrl = newPage.url;
+                onPageLoadFinished(newPage, params, status1);
             };
             setPageListener(newPage, params);
         };
@@ -357,7 +358,7 @@ function setPageListener(page, params) {
     page.onError = function(msg, trace) {
         if (trace && trace.length > 0 ) {
             var msgStack = [
-                "Error in page: " + page.url,
+                "\nError in page: " + page.url,
                 msg
             ];
             trace.forEach(function(t) {
@@ -382,7 +383,8 @@ function setPageListener(page, params) {
 
 function crawl(js, timeout, url, res) {
     //解析用户的额外数据
-    var userDatasStr = url.split("userDatas=")[1];
+    var splitArr = url.split("userDatas=");
+    var userDatasStr = splitArr[1];
     userDatasStr = decodeURIComponent(userDatasStr);
     var userDatas;
     try {
@@ -394,6 +396,8 @@ function crawl(js, timeout, url, res) {
     if (userDatas.proxyIp && userDatas.proxyPort) {
         phantom.setProxy(userDatas.proxyIp, userDatas.proxyPort);
     }
+    //清除url中的userDatas部分
+    url = splitArr[0].substring(0, splitArr[0].length - 1);
 
     var page = webpage.create();
     var params = {
@@ -403,6 +407,7 @@ function crawl(js, timeout, url, res) {
         js: js,
         res: res,
         globalData: {},
+        status: {},
         userDatas: userDatas,
         pages: [page]
     };
@@ -410,9 +415,10 @@ function crawl(js, timeout, url, res) {
     if (phantom.pageSettings) {
         page.settings = phantom.pageSettings;
     }
+    page.startLoadTime = new Date().getTime();
+    page.targetUrl = url;
     page.open(url, function (status) {
-        params.status = status;
-        onPageLoadFinished(page, params);
+        onPageLoadFinished(page, params, status);
     });
     setPageListener(page, params);
 
@@ -436,6 +442,13 @@ function crawl(js, timeout, url, res) {
 
 function crawlResponse(result, params) {
     if (params.isResClosed != true) {
+        //把status信息嵌入到result中
+        if (typeof result != "string") {
+            result.status = params.status;
+        }
+        else {
+            result = result.substring(0, result.length - 1) + ",\"status\":" + JSON.stringify(params.status) + "}";
+        }
         response(params.res, result);
 
         for (var i = 0, len = params.pages.length; i < len; i++) {

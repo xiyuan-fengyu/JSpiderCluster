@@ -1,7 +1,13 @@
 package com.xiyuan.common.util;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import java.io.File;
 import java.io.FileFilter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -146,6 +152,56 @@ public class ClassUtil {
             }
         }
         return null;
+    }
+
+    public static Object jsonEleTranslate(JsonElement json, Class<?> clazz) {
+        Object result;
+        if (clazz == JsonElement.class) {
+            result = json;
+        }
+        else if (clazz == JsonObject.class) {
+            result = json.getAsJsonObject();
+        }
+        else if (clazz == JsonArray.class) {
+            result = json.getAsJsonArray();
+        }
+        else if (clazz == String.class) {
+            result = json.getAsString();
+        }
+        else if (clazz == int.class || clazz == Integer.class) {
+            result = json.getAsInt();
+        }
+        else if (clazz == boolean.class || clazz == Boolean.class) {
+            result = json.getAsBoolean();
+        }
+        else if (clazz == long.class || clazz == Long.class) {
+            result = json.getAsLong();
+        }
+        else if (clazz == float.class || clazz == Float.class) {
+            result = json.getAsFloat();
+        }
+        else if (clazz == double.class || clazz == Double.class) {
+            result = json.getAsDouble();
+        }
+        else if (clazz == byte.class || clazz == Byte.class) {
+            result = json.getAsByte();
+        }
+        else if (clazz == char.class || clazz == Character.class) {
+            result = json.getAsCharacter();
+        }
+        else if (clazz == short.class || clazz == Short.class) {
+            result = json.getAsShort();
+        }
+        else if (clazz == BigInteger.class) {
+            result = json.getAsBigInteger();
+        }
+        else if (clazz == BigDecimal.class) {
+            result = json.getAsBigDecimal();
+        }
+        else {
+            result = json;
+        }
+        return result;
     }
 
 }
