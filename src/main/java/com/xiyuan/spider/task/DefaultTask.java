@@ -108,7 +108,7 @@ public class DefaultTask {
                         try {
                             OnError onError = callbackMethod.getAnnotation(OnError.class);
                             if (onError != null) {
-                                callback = callbackObject.getClass().getMethod(onError.callback(), String.class, JsonElement.class);
+                                callback = callbackObject.getClass().getMethod(onError.callback(), String.class, JsonObject.class);
                             }
                         } catch (NoSuchMethodException e) {
 //                                e.printStackTrace();
@@ -116,7 +116,7 @@ public class DefaultTask {
 
                         if (callback == null) {
                             try {
-                                callback = callbackObject.getClass().getMethod("onError", String.class, JsonElement.class);
+                                callback = callbackObject.getClass().getMethod("onError", String.class, JsonObject.class);
                             } catch (NoSuchMethodException e1) {
 //                                    e1.printStackTrace();
                             }
