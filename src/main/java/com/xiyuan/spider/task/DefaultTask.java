@@ -75,11 +75,12 @@ public class DefaultTask {
                     }
 
                     JsonObject json = GsonUtil.jsonParser.parse(responseStr).getAsJsonObject();
+                    Object res = null;
+                    Method callM = null;
                     if (json.has("return")) {
                         success = true;
                         AppInfo.deltaSuccessTaskNum(1);
 
-                        Object res;
                         try {
                             Object resultObj = ClassUtil.jsonEleTranslate(json.get("return"), callbackMethod.getParameterTypes()[1]);
                             if (callbackMethod.getParameterTypes().length == 2) {
@@ -94,41 +95,42 @@ public class DefaultTask {
                             logger.error("callback method (" + callbackMethod.getName() + ") invoked with error", e);
                         }
 
-                        if (res != null) {
-                            AddToQueue addToQueue = callbackMethod.getAnnotation(AddToQueue.class);
-                            if (addToQueue != null) {
-                                QueueManager.addToQueue(res, addToQueue);
-                            }
-                        }
+                        callM = callbackMethod;
                     }
                     else if (json.has("error")) {
                         AppInfo.deltaFailTaskNum(1);
 
-                        Method callback = null;
                         try {
                             OnError onError = callbackMethod.getAnnotation(OnError.class);
                             if (onError != null) {
-                                callback = callbackObject.getClass().getMethod(onError.callback(), String.class, JsonObject.class);
+                                callM = callbackObject.getClass().getMethod(onError.callback(), String.class, JsonObject.class);
                             }
                         } catch (NoSuchMethodException e) {
 //                                e.printStackTrace();
                         }
 
-                        if (callback == null) {
+                        if (callM == null) {
                             try {
-                                callback = callbackObject.getClass().getMethod("onError", String.class, JsonObject.class);
+                                callM = callbackObject.getClass().getMethod("onError", String.class, JsonObject.class);
                             } catch (NoSuchMethodException e1) {
 //                                    e1.printStackTrace();
                             }
                         }
 
-                        if (callback != null) {
+                        if (callM != null) {
                             try {
-                                callback.invoke(callbackObject, url, json);
+                                res = callM.invoke(callbackObject, url, json);
                             }
                             catch (Exception e) {
-                                logger.error("callback method (" + callback.getName() + ") invoked with error", e);
+                                logger.error("callback method (" + callM.getName() + ") invoked with error", e);
                             }
+                        }
+                    }
+
+                    if (res != null) {
+                        AddToQueue addToQueue = callM.getAnnotation(AddToQueue.class);
+                        if (addToQueue != null) {
+                            QueueManager.addToQueue(res, addToQueue);
                         }
                     }
                 } catch (Exception e) {
