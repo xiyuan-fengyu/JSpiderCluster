@@ -131,9 +131,13 @@ public class QueueManager {
         if (filter == null) {
             queue.push(msg);
         }
-        else if (!filter.isExisted(msg)) {
-            queue.push(msg);
-            filter.setExisted(msg);
+        else {
+            synchronized (filter) {
+                if (!filter.isExisted(msg)) {
+                    queue.push(msg);
+                    filter.setExisted(msg);
+                }
+            }
         }
     }
 
