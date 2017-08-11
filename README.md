@@ -6,7 +6,7 @@ phantomjs执行实际的抓取任务，抓取逻辑采用js编写，可以方便
 使用jquery可以很方便地从网页中提取需要的信息，在抓取逻辑的js中可以使用一些扩展功能，例如下载，截图，导入js。
 
 #### 快速起步
-1. 安装phantomjs，并配置环境变量  
+1. 安装phantomjs，在环境变量Path中添加 “phantomjs安装目录/bin” 这个路径
 2. 从[这里](https://github.com/xiyuan-fengyu/JSpider_HelloWorld)下载Hello World示例  
 3. 用IDE打开示例项目，将libs目录下的JSpiderCluster.jar添加为依赖  
 4. 运行com.xiyuan.helloworld.Luncher，可以在控制台最后看到 https://www.baidu.com 网页的title"百度一下，你就知道"
