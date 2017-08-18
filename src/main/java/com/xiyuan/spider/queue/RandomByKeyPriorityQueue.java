@@ -10,7 +10,7 @@ public class RandomByKeyPriorityQueue extends DefaultPriorityQueue {
     private static final long serialVersionUID = -7547015624262181312L;
 
     @Override
-    void computePriority(Message msg) {
+    protected void computePriority(Message msg) {
         msg.setPriority((int) (Math.random() * msg.key().length() * 100));
     }
 

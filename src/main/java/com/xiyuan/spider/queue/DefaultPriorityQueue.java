@@ -10,13 +10,14 @@ import java.util.concurrent.PriorityBlockingQueue;
 /**
  * Created by xiyuan_fengyu on 2017/2/28.
  */
-public abstract class DefaultPriorityQueue extends AbsQueue {
+public class DefaultPriorityQueue extends AbsQueue {
 
     private static final long serialVersionUID = 8107664626880918352L;
 
     private PriorityBlockingQueue<Message> queue = new PriorityBlockingQueue<>();
 
-    abstract void computePriority(Message msg);
+    protected void computePriority(Message msg) {
+    }
 
     @Override
     public void push(Message t) {

@@ -15,7 +15,7 @@ public class UrlModePriorityQueue extends DefaultPriorityQueue {
     private HashMap<String, Integer> urlModeCounts = new HashMap<>();
 
     @Override
-    void computePriority(Message msg) {
+    protected void computePriority(Message msg) {
         String urlMode = urlMode(msg.url());
         int count = urlModeCounts.containsKey(urlMode) ? urlModeCounts.get(urlMode) + 1 : 1;
         urlModeCounts.put(urlMode, count);
