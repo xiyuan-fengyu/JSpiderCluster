@@ -336,6 +336,18 @@ function setPageListener(page, params) {
         }
     };
 
+    page.onResourceReceived = function(response) {
+        if (response.bodySize) {
+            page.evaluate(function (response) {
+                window.resources = window.resources || {};
+                window.resources[response.url] = {
+                    bodySize: response.bodySize,
+                    contentType: response.contentType
+                };
+            }, response);
+        }
+    };
+
     page.onConsoleMessage = function(msg) {
         println(msg.substring(0, Math.min(500, msg.length)));
         if (msg.substring(0, tag_return.length) == tag_return || msg.substring(0, tag_error.length) == tag_error) {
