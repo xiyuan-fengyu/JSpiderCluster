@@ -81,6 +81,10 @@ function prepareJs(curPage, params) {
         //用户数据
         window.userDatas = userDatas;
 
+        //资源请求成功的记录，用于查看bodySize
+        window.resources = {};
+
+
         //发送消息给phantom, msg 必须是字符串
         window.sendMsgToPhantom = function (msg) {
             var xhr = new XMLHttpRequest();

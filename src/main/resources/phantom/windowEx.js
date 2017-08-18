@@ -5,6 +5,9 @@
 //用户数据
 window.userDatas = userDatas;
 
+//资源请求成功的记录，用于查看bodySize
+window.resources = {};
+
 //获取所有满足 条件 的链接，条件可以是一个函数或则正则表达式
 window.links = function (condition) {
     var arr = [];
