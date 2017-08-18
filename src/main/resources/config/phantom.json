@@ -14,7 +14,11 @@
     "password": "",
     "XSSAuditingEnabled": false,
     "webSecurityEnabled": false,
-    "resourceTimeout": 30000
+    "resourceTimeout": 30000,
+    "viewportSize": {
+      "width": 1920,
+      "height": 1080
+    }
   },
 
   "cookies": [

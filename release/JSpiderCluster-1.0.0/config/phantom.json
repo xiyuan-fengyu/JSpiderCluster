@@ -1,8 +1,8 @@
 {
 
-  "cookiesFile": "cache/phantom/cookie.txt",
+  "cookiesFile": "../cache/phantom/cookie.txt",
   "diskCacheEnabled": true,
-  "offlineStoragePath": "cache/phantom/localStorage.txt",
+  "offlineStoragePath": "../cache/phantom/localStorage.txt",
   "offlineStorageDefaultQuota": 65535,
 
   "page": {
@@ -14,19 +14,18 @@
     "password": "",
     "XSSAuditingEnabled": false,
     "webSecurityEnabled": false,
-    "resourceTimeout": 30000
+    "resourceTimeout": 30000,
+    "viewportSize": {
+      "width": 1920,
+      "height": 1080
+    }
   },
 
   "cookies": [
     {
       "domain": "baidu.com",
       "path": "/",
-      "cookie": "BAIDUID=D9EBEF44;"
-    },
-    {
-      "domain": "bilibili.com",
-      "path": "/",
-      "cookie": "sid=cpl;"
+      "cookie": ""
     }
   ]
 }

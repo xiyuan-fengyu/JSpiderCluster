@@ -22,10 +22,23 @@ try {
     var configStr = fs.read("config/phantom.json");
     var config = JSON.parse(configStr);
     config.page = config.page || {};
+    //是否加载图片的配置
     if (!config.page.loadImages) {
         config.page.abortImgRequest = true;
         config.page.loadImages = true;
     }
+    //浏览器窗口大小配置
+    if (config.page.viewportSize) {
+        config.page.viewportSize.width = config.page.viewportSize.width || 1920;
+        config.page.viewportSize.height = config.page.viewportSize.height || 1080;
+    }
+    else {
+        config.page.viewportSize = {
+            width: 1920,
+            height: 1080
+        };
+    }
+
     phantom.pageSettings = config.page;
     var cookies = config.cookies;
     for (var i = 0, len = cookies.length; i < len; i++) {
@@ -432,6 +445,7 @@ function crawl(js, timeout, url, res) {
 
     if (phantom.pageSettings) {
         page.settings = phantom.pageSettings;
+        page.viewportSize = phantom.pageSettings.viewportSize;
     }
     page.startLoadTime = new Date().getTime();
     page.targetUrl = url;
