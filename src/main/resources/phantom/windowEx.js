@@ -26,13 +26,30 @@ window.links = function (condition) {
 };
 
 //截图
-window.screenshot = function (picName, selector, quality) {
+window.screenshot = function (picName, selectorOrJqueryObj, quality) {
+    var selector;
+    if (typeof selectorOrJqueryObj == "string") {
+        selector = selectorOrJqueryObj;
+    }
+    else {
+        var oldId = selectorOrJqueryObj.attr("id");
+        if (oldId != null && oldId.length > 0) {
+            selector =  "#" + oldId;
+        }
+        else {
+            var randomId = "screenshot_" + new Date().getTime() + "_" + parseInt(Math.random() * 10000);
+            selectorOrJqueryObj.attr("id", randomId);
+            selector = "#" + randomId;
+        }
+    }
+
     console.log(JSON.stringify({
         screenshot: picName || "screenshot.jpeg",
         quality: quality || 100,
         selector: selector
     }));
 };
+
 
 //下载
 window.download = function (url, savePath) {
