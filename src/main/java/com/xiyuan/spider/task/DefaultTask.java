@@ -117,13 +117,19 @@ public class DefaultTask {
                             }
                         }
 
+                        boolean errorDealed = false;
                         if (callM != null) {
                             try {
                                 res = callM.invoke(callbackObject, url, json);
+                                errorDealed = true;
                             }
                             catch (Exception e) {
-                                logger.error("callback method (" + callM.getName() + ") invoked with error", e);
+                                e.printStackTrace();
                             }
+                        }
+
+                        if (!errorDealed) {
+                            logger.error("\nTask executed with error:\nurl:    " + url + "\n" + json);
                         }
                     }
 
