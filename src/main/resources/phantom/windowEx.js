@@ -30,19 +30,21 @@ window.links = function (condition) {
 
 //截图
 window.screenshot = function (picName, selectorOrJqueryObj, quality) {
-    var selector;
-    if (typeof selectorOrJqueryObj == "string") {
-        selector = selectorOrJqueryObj;
-    }
-    else {
-        var oldId = selectorOrJqueryObj.attr("id");
-        if (oldId != null && oldId.length > 0) {
-            selector =  "#" + oldId;
+    var selector = null;
+    if (selectorOrJqueryObj) {
+        if (typeof selectorOrJqueryObj == "string") {
+            selector = selectorOrJqueryObj;
         }
         else {
-            var randomId = "screenshot_" + new Date().getTime() + "_" + parseInt(Math.random() * 10000);
-            selectorOrJqueryObj.attr("id", randomId);
-            selector = "#" + randomId;
+            var oldId = selectorOrJqueryObj.attr("id");
+            if (oldId != null && oldId.length > 0) {
+                selector =  "#" + oldId;
+            }
+            else {
+                var randomId = "screenshot_" + new Date().getTime() + "_" + parseInt(Math.random() * 10000);
+                selectorOrJqueryObj.attr("id", randomId);
+                selector = "#" + randomId;
+            }
         }
     }
 
