@@ -143,6 +143,7 @@ function prepareJs(curPage, params) {
                 newImg.onload = function () {
                     sendMsgToPhantom(JSON.stringify({
                         newImgLoadFinish: newImg.src,
+                        page: location.href,
                         status: true
                     }));
                     sendMsgToPhantom(JSON.stringify({
@@ -161,13 +162,15 @@ function prepareJs(curPage, params) {
                     document.body.removeChild(newImg);
                     sendMsgToPhantom(JSON.stringify({
                         newImgLoadFinish: newImg.src,
+                        page: location.href,
                         status: false
                     }));
                 };
                 document.body.appendChild(newImg);
 
                 sendMsgToPhantom(JSON.stringify({
-                    newImgStartLoad: newImg.src
+                    newImgStartLoad: newImg.src,
+                    page: location.href
                 }));
             }
             else {
