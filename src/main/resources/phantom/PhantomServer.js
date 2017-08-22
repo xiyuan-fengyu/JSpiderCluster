@@ -113,30 +113,60 @@ function prepareJs(curPage, params) {
         };
 
         //截图
-        window.screenshot = function (picName, selectorOrJqueryObj, quality) {
-            var selector = null;
-            if (selectorOrJqueryObj) {
-                if (typeof selectorOrJqueryObj == "string") {
-                    selector = selectorOrJqueryObj;
+        window.screenshot = function (picName, selectorOrObj, quality) {
+            var dom = null;
+            if (selectorOrObj) {
+                if (typeof selectorOrObj == "string") {
+                    dom = document.querySelector(selectorOrObj);
+                }
+                else if (selectorOrObj.length) {
+                    dom = selectorOrObj[0];
                 }
                 else {
-                    var oldId = selectorOrJqueryObj.attr("id");
-                    if (oldId != null && oldId.length > 0) {
-                        selector =  "#" + oldId;
-                    }
-                    else {
-                        var randomId = "screenshot_" + new Date().getTime() + "_" + parseInt(Math.random() * 10000);
-                        selectorOrJqueryObj.attr("id", randomId);
-                        selector = "#" + randomId;
-                    }
+                    dom = selectorOrObj;
                 }
             }
 
-            sendMsgToPhantom(JSON.stringify({
-                screenshot: picName || "screenshot.jpeg",
-                quality: quality || 100,
-                selector: selector
-            }));
+            var imgSrc = dom ? dom.src : null;
+            if (imgSrc) {
+                var newImg = document.createElement("img");
+                newImg.id = "screenshot_" + new Date().getTime() + "_" + parseInt(Math.random() * 10000);
+                newImg.src = imgSrc;
+                newImg.style.position = "fixed";
+                newImg.style.left = 0;
+                newImg.style.top = 0;
+                newImg.style.maxWidth = 1920;
+                newImg.style.zIndex = 0xffffff;
+                newImg.style.display = "none";
+                newImg.onload = function () {
+                    sendMsgToPhantom(JSON.stringify({
+                        screenshot: picName || "screenshot.jpeg",
+                        quality: quality || 100,
+                        selector: "#" + newImg.id,
+                        rect: {
+                            left: 0,
+                            top: 0,
+                            width: newImg.width,
+                            height: newImg.height
+                        }
+                    }));
+                };
+                newImg.onerror = function () {
+                    document.body.removeChild(newImg);
+                };
+                document.body.appendChild(newImg);
+            }
+            else {
+                if (dom == null) {
+                    dom = document.body;
+                }
+                sendMsgToPhantom(JSON.stringify({
+                    screenshot: picName || "screenshot.jpeg",
+                    quality: quality || 100,
+                    selector: null,
+                    rect: dom.getBoundingClientRect()
+                }));
+            }
         };
 
         //下载
@@ -361,27 +391,7 @@ function setPageListener(page, params) {
         }
         else if (msg.substring(0, tag_screenshot.length) == tag_screenshot) {
             var json = JSON.parse(msg);
-            if (json.selector) {
-                page.clipRect = page.evaluate(function (domSelector) {
-                    var rect = document.querySelector(domSelector).getBoundingClientRect();
-                    return {
-                        top: rect.top,
-                        left: rect.left,
-                        width: rect.width,
-                        height: rect.height
-                    };
-                }, json.selector);
-                page.render("screenshot/" + json.screenshot, {quality: json.quality});
-            }
-            else {
-                page.clipRect = {
-                    top: 0,
-                    left: 0,
-                    width: 0,
-                    height: 0
-                };
-                page.render("screenshot/" + json.screenshot, {quality: json.quality});
-            }
+            tryScreenshot(page, json);
         }
         else if (msg.substring(0, tag_download.length) == tag_download) {
             var json = JSON.parse(msg);
@@ -426,6 +436,49 @@ function setPageListener(page, params) {
     page.onAlert = function(msg) {
         console.log("alert: " + msg);
     };
+}
+
+function tryScreenshot(page, json, fromQueue) {
+    page.screenshotTasks = page.screenshotTasks || [];
+    if (fromQueue != true && page.screenshotTasks.length > 0) {
+        page.screenshotTasks.push(json);
+    }
+    else {
+        if (json.selector && json.rect) {
+            page.clipRect = json.rect;
+            var found = page.evaluate(function (domSelector) {
+                var dom = document.querySelector(domSelector);
+                if (dom) {
+                    dom.style.display = "block";
+                    return true;
+                }
+            }, json.selector);
+            if (found) {
+                page.render("screenshot/" + json.screenshot, {quality: json.quality});
+                page.evaluate(function (domSelector) {
+                    var dom = document.querySelector(domSelector);
+                    if (dom) {
+                        dom.remove();
+                    }
+                }, json.selector);
+            }
+        }
+        else {
+            page.clipRect = json.rect;
+            page.render("screenshot/" + json.screenshot, {quality: json.quality});
+        }
+
+        setTimeout(function () {
+            try {
+                if (page.screenshotTasks.length > 0) {
+                    var nextTask = page.screenshotTasks[0];
+                    page.screenshotTasks = page.screenshotTasks.slice(1);
+                    tryScreenshot(page, nextTask, true);
+                }
+            }
+            catch (e) {}
+        }, 50);
+    }
 }
 
 function crawl(js, timeout, url, res) {
@@ -499,12 +552,32 @@ function crawlResponse(result, params) {
         else {
             result = result.substring(0, result.length - 1) + ",\"status\":" + JSON.stringify(params.status) + "}";
         }
+
+        waitForScreenshot(result, params);
+    }
+}
+
+function waitForScreenshot(result, params) {
+    var finish = true;
+    for (var i = 0, len = params.pages.length; i < len; i++) {
+        if (params.pages[i].screenshotTasks && params.pages[i].screenshotTasks.length > 0) {
+            finish = false;
+            break;
+        }
+    }
+
+    if (finish) {
         response(params.res, result);
 
         for (var i = 0, len = params.pages.length; i < len; i++) {
             params.pages[i].close();
         }
         params.isResClosed = true;
+    }
+    else {
+        setTimeout(function () {
+            waitForScreenshot(result, params);
+        }, 100);
     }
 }
 
