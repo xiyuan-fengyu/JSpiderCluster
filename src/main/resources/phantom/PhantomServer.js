@@ -8,6 +8,8 @@ var fs = require('fs');
 var tag_req_crawl = "/crawl?";
 var tag_return = "{\"return\":";
 var tag_screenshot = "{\"screenshot\":";
+var tag_newImgStartLoad = "{\"newImgStartLoad\":";
+var tag_newImgLoadFinish = "{\"newImgLoadFinish\":";
 var tag_download = "{\"download\":";
 var tag_error = "{\"error\":";
 
@@ -140,6 +142,10 @@ function prepareJs(curPage, params) {
                 newImg.style.display = "none";
                 newImg.onload = function () {
                     sendMsgToPhantom(JSON.stringify({
+                        newImgLoadFinish: newImg.src,
+                        status: true
+                    }));
+                    sendMsgToPhantom(JSON.stringify({
                         screenshot: picName || "screenshot.jpeg",
                         quality: quality || 100,
                         selector: "#" + newImg.id,
@@ -153,8 +159,16 @@ function prepareJs(curPage, params) {
                 };
                 newImg.onerror = function () {
                     document.body.removeChild(newImg);
+                    sendMsgToPhantom(JSON.stringify({
+                        newImgLoadFinish: newImg.src,
+                        status: false
+                    }));
                 };
                 document.body.appendChild(newImg);
+
+                sendMsgToPhantom(JSON.stringify({
+                    newImgStartLoad: newImg.src
+                }));
             }
             else {
                 if (dom == null) {
@@ -393,6 +407,12 @@ function setPageListener(page, params) {
             var json = JSON.parse(msg);
             tryScreenshot(page, json);
         }
+        else if (msg.substring(0, tag_newImgStartLoad.length) == tag_newImgStartLoad) {
+            page.imgLoadingNum = (page.imgLoadingNum || 0) + 1;
+        }
+        else if (msg.substring(0, tag_newImgLoadFinish.length) == tag_newImgLoadFinish) {
+            page.imgLoadingNum = (page.imgLoadingNum || 0) - 1;
+        }
         else if (msg.substring(0, tag_download.length) == tag_download) {
             var json = JSON.parse(msg);
             var response = page.evaluate(function(url) {
@@ -560,7 +580,8 @@ function crawlResponse(result, params) {
 function waitForScreenshot(result, params) {
     var finish = true;
     for (var i = 0, len = params.pages.length; i < len; i++) {
-        if (params.pages[i].screenshotTasks && params.pages[i].screenshotTasks.length > 0) {
+        var page = params.pages[i];
+        if ((page.imgLoadingNum != null && page.imgLoadingNum > 0) || (page.screenshotTasks && page.screenshotTasks.length > 0)) {
             finish = false;
             break;
         }
