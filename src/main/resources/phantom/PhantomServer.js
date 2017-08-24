@@ -137,7 +137,7 @@ function prepareJs(curPage, params) {
                 newImg.style.position = "fixed";
                 newImg.style.left = 0;
                 newImg.style.top = 0;
-                newImg.style.maxWidth = 1920;
+                newImg.style.width = "auto";
                 newImg.style.zIndex = 0xffffff;
                 newImg.style.display = "none";
                 newImg.onload = function () {
@@ -387,6 +387,49 @@ function setPageListener(page, params) {
             page.onConsoleMessage(requestData.postData);
             networkRequest.abort();
         }
+        else {
+            // console.log("\nrequest: " + JSON.stringify(networkRequest) + "\n" + JSON.stringify(requestData) + "\n");
+            if (requestData.url.match(/http:\/\/cms-bucket.nosdn.127.net\/.*\.jpg/)) {
+                requestData.headers = [
+                    {
+                        name: "Accept",
+                        value: "image/webp,image/apng,image/*,*/*;q=0.8"
+                    },
+                    {
+                        name: "Accept-Encoding",
+                        value: "gzip, deflate"
+                    },
+                    {
+                        name: "Accept-Language",
+                        value: "zh-CN,zh;q=0.8"
+                    },
+                    {
+                        name: "Cache-Control",
+                        value: "no-cache"
+                    },
+                    {
+                        name: "Connection",
+                        value: "keep-alive"
+                    },
+                    {
+                        name: "Host",
+                        value: "cms-bucket.nosdn.127.net"
+                    },
+                    {
+                        name: "Pragma",
+                        value: "no-cache"
+                    },
+                    {
+                        name: "Referer",
+                        value: "http://news.163.com/17/0623/16/CNKKOMQA00018AOP.html"
+                    },
+                    {
+                        name: "User-Agent",
+                        value: "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36"
+                    }
+                ];
+            }
+        }
     };
 
     page.onResourceReceived = function(response) {
@@ -534,7 +577,8 @@ function crawl(js, timeout, url, res) {
         globalData: {},
         status: {},
         userDatas: userDatas,
-        pages: [page]
+        pages: [page],
+        timeover: false
     };
 
     if (phantom.pageSettings) {
@@ -557,6 +601,7 @@ function crawl(js, timeout, url, res) {
     }
     setTimeout(function () {
         if (params.isResClosed != true) {
+            params.timeover = true;
             crawlResponse({
                 error: "TaskTimeout",
                 msg: "task timeout!",
@@ -582,11 +627,13 @@ function crawlResponse(result, params) {
 
 function waitForScreenshot(result, params) {
     var finish = true;
-    for (var i = 0, len = params.pages.length; i < len; i++) {
-        var page = params.pages[i];
-        if ((page.imgLoadingNum != null && page.imgLoadingNum > 0) || (page.screenshotTasks && page.screenshotTasks.length > 0)) {
-            finish = false;
-            break;
+    if (!params.timeover) {
+        for (var i = 0, len = params.pages.length; i < len; i++) {
+            var page = params.pages[i];
+            if ((page.imgLoadingNum != null && page.imgLoadingNum > 0) || (page.screenshotTasks && page.screenshotTasks.length > 0)) {
+                finish = false;
+                break;
+            }
         }
     }
 
