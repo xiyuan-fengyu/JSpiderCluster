@@ -61,7 +61,7 @@ public class TaskManager {
             obj.addProperty("url", task.url);
             obj.addProperty("js", task.js);
             obj.addProperty("cron", task.getCronStr());
-            obj.addProperty("next", DateUtil.formatDate(new Date(task.getNextExcuteTime())));
+            obj.addProperty("next", DateUtil.format(new Date(task.getNextExcuteTime())));
             arr.add(obj);
         }
         return arr;

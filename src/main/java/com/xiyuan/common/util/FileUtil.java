@@ -8,6 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by xiyuan_fengyu on 2017/2/20.
@@ -69,6 +71,10 @@ public class FileUtil {
         return buffer.toString();
     }
 
+    public static boolean write(String path, byte[] bytes) {
+        return write(path, bytes, false);
+    }
+
     public static boolean write(String path, String content) {
         return write(path, content, null);
     }
@@ -77,7 +83,12 @@ public class FileUtil {
         if (content == null) {
             return false;
         }
-        return write(path, content.getBytes(charset == null ? StandardCharsets.UTF_8 : charset), StandardOpenOption.CREATE);
+        return write(path, content.getBytes(charset != null ? charset : StandardCharsets.UTF_8), false);
+    }
+
+
+    public static boolean append(String path, byte[] bytes) {
+        return write(path, bytes, true);
     }
 
     public static boolean append(String path, String content) {
@@ -88,41 +99,17 @@ public class FileUtil {
         if (content == null) {
             return false;
         }
-        return append(path, content.getBytes(charset == null ? StandardCharsets.UTF_8 : charset));
+        return write(path, content.getBytes(charset != null ? charset : StandardCharsets.UTF_8), true);
     }
 
-    public static boolean append(String path, byte[] bytes) {
-        return write(path, bytes, StandardOpenOption.APPEND);
-    }
-
-    public static boolean write(String path, byte[] bytes) {
-        return write(path, bytes, StandardOpenOption.CREATE);
-    }
-
-    public static boolean write(String path, byte[] bytes, StandardOpenOption openOption) {
-        if (bytes == null) {
-            return false;
-        }
-
-        File file = new File(path);
-        File dir = file.getParentFile();
-        if (dir != null && (dir.exists() || dir.mkdirs())) {
-            try {
-                if (file.exists() && openOption == StandardOpenOption.CREATE) {
-                    file.delete();
-                }
-                if (!file.exists() || StandardOpenOption.APPEND != openOption) {
-                    file.createNewFile();
-                }
-
-                Files.write(file.toPath(), bytes, openOption);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
+    private static boolean write(String path, byte[] bytes, boolean isAppend) {
+        try (FileOutputStream out = new FileOutputStream(path, isAppend)) {
+            out.write(bytes);
             return true;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        else return false;
+        return false;
     }
 
     public static String getSubffix(String path) {
@@ -141,6 +128,22 @@ public class FileUtil {
             }
         }
         return "";
+    }
+
+    public static ArrayList<File> listFile(File dir) {
+        ArrayList<File> files = new ArrayList<>();
+        if (dir != null && dir.exists()) {
+            if (dir.isFile()) {
+                files.add(dir);
+            }
+            else {
+                File[] fs = dir.listFiles();
+                if (fs != null) {
+                    files.addAll(Arrays.asList(fs));
+                }
+            }
+        }
+        return files;
     }
 
 }

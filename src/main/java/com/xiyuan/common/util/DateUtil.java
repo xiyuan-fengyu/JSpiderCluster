@@ -1,29 +1,50 @@
 package com.xiyuan.common.util;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
- * Created by xiyuan_fengyu on 2017/3/9.
+ * Created by xiyuan_fengyu on 2017/8/17.
  */
 public class DateUtil {
 
-    public static String formatDate(Date date) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            return sdf.format(date);
+    private static final HashMap<String, SimpleDateFormat> formats = new HashMap<>();
+
+    public static final String fDefault = "yyyy-MM-dd HH:mm:ss";
+
+    public static final String fNoDivider = "yyyyMMddHHmmss";
+
+    public static final String fDay = "yyyy-MM-dd";
+
+    public static final String fDayNoDivider = "yyyyMMdd";
+
+    private static SimpleDateFormat getFormat(String formatStr) {
+        SimpleDateFormat format = formats.get(formatStr);
+        if (format == null) {
+            format = new SimpleDateFormat(formatStr);
+            formats.put(formatStr, format);
         }
-        catch (Exception e) {
-            return "";
-        }
+        return format;
     }
 
-    public static Date parse(String strDate) {
+    public static String format(Date date) {
+        return format(date, "yyyy-MM-dd HH:mm:ss");
+    }
+
+    public static String format(Date date, String format) {
+        return getFormat(format).format(date);
+    }
+
+    public static Date parse(String str) {
+        return parse(str, "yyyy-MM-dd HH:mm:ss");
+    }
+
+    public static Date parse(String str, String format) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            return sdf.parse(strDate);
-        }
-        catch (Exception e) {
+            return getFormat(format).parse(str);
+        } catch (ParseException e) {
             return new Date();
         }
     }
