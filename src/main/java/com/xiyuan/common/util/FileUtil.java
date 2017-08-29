@@ -103,11 +103,14 @@ public class FileUtil {
     }
 
     private static boolean write(String path, byte[] bytes, boolean isAppend) {
-        try (FileOutputStream out = new FileOutputStream(path, isAppend)) {
-            out.write(bytes);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
+        File parent = new File(path).getParentFile();
+        if (parent.exists() || parent.mkdirs()) {
+            try (FileOutputStream out = new FileOutputStream(path, isAppend)) {
+                out.write(bytes);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return false;
     }
