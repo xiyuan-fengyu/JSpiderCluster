@@ -84,7 +84,7 @@ function prepareJs(curPage, params) {
         window.userDatas = userDatas;
 
         //资源请求成功的记录，用于查看bodySize
-        window.resources = {};
+        window.resources = [];
 
 
         //发送消息给phantom, msg 必须是字符串
@@ -433,15 +433,10 @@ function setPageListener(page, params) {
     };
 
     page.onResourceReceived = function(response) {
-        if (response.bodySize) {
-            page.evaluate(function (response) {
-                window.resources = window.resources || {};
-                window.resources[response.url] = {
-                    bodySize: response.bodySize,
-                    contentType: response.contentType
-                };
-            }, response);
-        }
+        page.evaluate(function (response) {
+            window.resources = window.resources || [];
+            window.resources.push(response);
+        }, response);
     };
 
     page.onConsoleMessage = function(msg) {
