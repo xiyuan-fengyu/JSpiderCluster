@@ -56,7 +56,7 @@ do
 
             source /etc/profile
             cd \$JSPIDER_HOME/bin
-            nohup java -jar JSpiderCluster.jar worker &
-        " > $JSPIDER_HOME/logs/worker.txt &
+            nohup java -jar JSpiderCluster.jar worker >\$JSPIDER_HOME/logs/worker_$worker.txt 2>\$JSPIDER_HOME/logs/worker_$worker.txt &
+        " &
     fi
 done

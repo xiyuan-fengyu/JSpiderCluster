@@ -7,7 +7,7 @@ do
         ssh $masterIp "
             source /etc/profile
             cd \$JSPIDER_HOME/bin
-            nohup java -jar JSpiderCluster.jar master &
-        " > $JSPIDER_HOME/logs/master.txt &
+            nohup java -jar JSpiderCluster.jar master >\$JSPIDER_HOME/logs/master.txt 2>\$JSPIDER_HOME/logs/master.txt &
+        " &
     fi
 done < $JSPIDER_HOME/config/cluster.properties
