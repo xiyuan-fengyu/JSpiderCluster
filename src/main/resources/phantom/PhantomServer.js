@@ -545,7 +545,7 @@ function tryScreenshot(page, json, fromQueue) {
 function crawl(js, timeout, url, res) {
     //解析用户的额外数据
     var splitArr = url.split("userDatas=");
-    var userDatas;
+    var userDatas = {};
     if (splitArr.length > 1) {
         var userDatasStr = splitArr[1];
         userDatasStr = decodeURIComponent(userDatasStr);
@@ -553,7 +553,6 @@ function crawl(js, timeout, url, res) {
             userDatas = JSON.parse(userDatasStr);
         }
         catch (e) {
-            userDatas = {};
         }
         if (userDatas.proxyIp && userDatas.proxyPort) {
             phantom.setProxy(userDatas.proxyIp, userDatas.proxyPort);
