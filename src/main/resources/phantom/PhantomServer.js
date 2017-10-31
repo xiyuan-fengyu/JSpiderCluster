@@ -6,6 +6,7 @@ var system = require('system');
 var fs = require('fs');
 
 var tag_req_crawl = "/crawl?";
+var tag_req_ping = "/ping";
 var tag_return = "{\"return\":";
 var tag_screenshot = "{\"screenshot\":";
 var tag_newImgStartLoad = "{\"newImgStartLoad\":";
@@ -52,6 +53,7 @@ catch (e) {}
 
 var server = require('webserver').create();
 var port = parseInt(system.args[1]);
+var lastPingTime = new Date().getTime();
 server.listen(port, function(req, res){
     var reqUrl = req.url;
     var isBadRequest = true;
@@ -63,6 +65,12 @@ server.listen(port, function(req, res){
             crawl(decodeURI(matcher[1]), decodeURI(matcher[2]), decodeURI(matcher[3]), res);
         }
     }
+    else if (reqUrl === tag_req_ping) {
+        isBadRequest = false;
+        lastPingTime = new Date().getTime();
+        res.write("pong");
+        res.close();
+    }
 
     if (isBadRequest) {
         response(res, {
@@ -72,7 +80,20 @@ server.listen(port, function(req, res){
     }
 });
 
+function checkPing() {
+    if (new Date().getTime() - lastPingTime >= 10000) {
+        //ping 超时，自动停止
+        phantom.exit(0);
+    }
+    else {
+        setTimeout(function () {
+            checkPing();
+        }, 2000);
+    }
+}
+
 sendFlag(flag_server_start);
+checkPing();
 
 
 

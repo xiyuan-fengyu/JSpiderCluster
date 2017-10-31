@@ -5,6 +5,7 @@ import com.xiyuan.cluster.decoder.PrtDecoder;
 import com.xiyuan.cluster.encoder.PrtEncoder;
 import com.xiyuan.cluster.msg.Messages;
 import com.xiyuan.config.ClusterCfg;
+import com.xiyuan.spider.manager.TaskManager;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -14,6 +15,8 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by xiyuan_fengyu on 2017/3/1.
@@ -32,6 +35,14 @@ public class Worker {
                     .channel(NioSocketChannel.class)
                     .option(ChannelOption.TCP_NODELAY, true)
                     .handler(new ConnectionHandler());
+
+            //周期性向该节点下的所有 phantomjs 进程发送 ping 信息，超过一定时间phantomjs未收到消息则自动停止
+            group.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    controller.ping();
+                }
+            }, 2000, 4000, TimeUnit.MILLISECONDS);
 
             ChannelFuture future = bootstrap.connect(ClusterCfg.cluster_master_host, ClusterCfg.cluster_master_netty_port).sync();
             future.channel().closeFuture().sync();

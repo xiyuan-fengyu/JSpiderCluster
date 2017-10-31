@@ -2,6 +2,7 @@ package com.xiyuan.cluster.controller;
 
 import com.xiyuan.cluster.msg.Messages;
 import com.xiyuan.common.util.ClassUtil;
+import com.xiyuan.common.util.HttpUtil;
 import com.xiyuan.config.AppInfo;
 import com.xiyuan.config.ClusterCfg;
 import com.xiyuan.spider.JSpiderWorker;
@@ -71,6 +72,18 @@ public class WorkerController {
                 Files.write(jsFile.toPath(), shareFile.getContent().getBytes("utf-8"));
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    public void ping() {
+        for (int port : workerCfg.phantom_ports) {
+            try {
+                String reqUrl = "http://" + workerCfg.host + ":" + port + "/ping";
+                HttpUtil.get(reqUrl);
+            }
+            catch (Exception e) {
+//                e.printStackTrace();
             }
         }
     }
