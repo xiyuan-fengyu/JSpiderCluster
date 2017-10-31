@@ -8,16 +8,17 @@ phantomjs执行实际的抓取任务，抓取逻辑采用js编写，可以方便
 #### 快速起步
 1. 安装phantomjs  
 
-windows
+windows  
 在环境变量Path中添加 “phantomjs安装目录/bin” 这个路径  
   
 linux  
 在 /etc/profile 的最后添加  
 export PHANTOM_HOME=phantomjs安装目录  
 export PATH=$PATH:$PHANTOM_HOME/bin  
+然后 source /etc/profile 使其生效  
   
 mac通过添加软链接的方式  
-sudo ln -s phantomjs安装目录/bin/phantomjs /usr/bin/phantomjs  
+sudo ln -s phantomjs安装目录/bin/phantomjs /YOUR_HOME/phantomjs  
     
 2. 从[这里](https://github.com/xiyuan-fengyu/JSpider_HelloWorld)下载Hello World示例  
 3. 用IDE打开示例项目，将libs目录下的JSpiderCluster.jar添加为依赖  

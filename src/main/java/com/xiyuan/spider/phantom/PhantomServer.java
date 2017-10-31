@@ -39,7 +39,16 @@ public class PhantomServer {
                 public void run() {
                     Runtime rt = Runtime.getRuntime();
                     try {
-                        process = rt.exec("phantomjs --config=" + phantomConfigPath + " " + phantomJsServerJsPath + " " + port + " " + AppInfo.getJspiderHome() + " " +  AppInfo.getSrcPath());
+                        String phantomjsPath;
+                        //修复mac下面找不到phantomjs的问题
+                        if (System.getProperty("os.name").toLowerCase().startsWith("mac")) {
+                            phantomjsPath = System.getProperty("user.home") + "/phantomjs";
+                        }
+                        else {
+                            phantomjsPath = "phantomjs";
+                        }
+
+                        process = rt.exec(phantomjsPath + " --config=" + phantomConfigPath + " " + phantomJsServerJsPath + " " + port + " " + AppInfo.getJspiderHome() + " " +  AppInfo.getSrcPath());
                         InputStream in = process.getInputStream();
                         BufferedReader br = new BufferedReader(new InputStreamReader(in));
                         String temp;
