@@ -1,17 +1,19 @@
 package com.xiyuan.common.loader;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by xiyuan_fengyu on 2017/3/2.
  */
+@Deprecated
 public class LoadFromJar {
 
     public static void load(File dir) {
@@ -24,20 +26,35 @@ public class LoadFromJar {
 
     public static void addUrlsToClassPath(List<URL> urls) {
         if (urls != null && urls.size() > 0) {
-            try {
-                Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-                method.setAccessible(true);
-                URLClassLoader classLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-                for (URL url : urls) {
-                    try {
-                        method.invoke(classLoader, url);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+//                method.setAccessible(true);
+//                URLClassLoader classLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+//                for (URL url : urls) {
+//                    try {
+//                        method.invoke(classLoader, url);
+//                    } catch (IllegalAccessException | InvocationTargetException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            } catch (NoSuchMethodException e) {
+//                e.printStackTrace();
+//            }
+
+//            URL[] urlArr = new URL[urls.size()];
+//            urls.toArray(urlArr);
+//            for (URL url : urlArr) {
+//                System.out.println(url);
+//            }
+//            URLClassLoader classLoader = new URLClassLoader(urlArr, LoadFromJar.class.getClassLoader());
+//            try {
+//                classLoader.loadClass("com.github.kevinsawicki.http.HttpRequest");
+//                classLoader.close();
+//            } catch (ClassNotFoundException | IOException e) {
+//                e.printStackTrace();
+//            }
+
+
         }
     }
 

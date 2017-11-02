@@ -5,6 +5,7 @@ import java.io.*;
 /**
  * Created by xiyuan_fengyu on 2017/3/2.
  */
+@Deprecated
 class FileClassLoader extends ClassLoader {
 
     private String rootDir;

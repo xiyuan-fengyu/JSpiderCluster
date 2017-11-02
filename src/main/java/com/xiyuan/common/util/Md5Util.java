@@ -26,12 +26,14 @@ public class Md5Util {
     }
 
     public static String get(String origin, Charset charset) {
+        return get(origin.getBytes(charset));
+    }
+
+    public static String get(byte[] bytes) {
         String resultString = null;
         try {
-            resultString = origin;
             MessageDigest md = MessageDigest.getInstance("MD5");
-            resultString = byteArrayToHexString(md.digest(resultString
-                    .getBytes(charset)));
+            resultString = byteArrayToHexString(md.digest(bytes));
         } catch (Exception e) {
             e.printStackTrace();
         }

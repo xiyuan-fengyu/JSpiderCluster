@@ -13,6 +13,7 @@ import java.util.List;
 /**
  * Created by xiyuan_fengyu on 2017/3/2.
  */
+@Deprecated
 public class LoadFromClass {
 
     public static List<Class> load(File classRoot) {

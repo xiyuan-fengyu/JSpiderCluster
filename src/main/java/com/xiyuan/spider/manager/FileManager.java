@@ -4,6 +4,7 @@ import com.xiyuan.cluster.controller.MasterController;
 import com.xiyuan.cluster.msg.Messages;
 import com.xiyuan.common.loader.LoadFromClass;
 import com.xiyuan.common.loader.LoadFromJar;
+import com.xiyuan.common.loader.XyClassLoader;
 import com.xiyuan.common.util.FileUtil;
 import com.xiyuan.common.watcher.FileWatchers;
 import com.xiyuan.config.AppInfo;
@@ -32,12 +33,9 @@ public class FileManager {
             String suffix = FileUtil.getSubffix(file.getName());
 
             switch (suffix) {
-                case "jar": {
-                    LoadFromJar.load(file);
-                    break;
-                }
+                case "jar":
                 case "class": {
-                    TaskManager.annotationScan(LoadFromClass.load(new File(AppInfo.getSrcPath())));
+                    TaskManager.annotationScan(new XyClassLoader().load(AppInfo.getSrcPath()));
                     break;
                 }
                 case "js": {
