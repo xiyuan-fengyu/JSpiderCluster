@@ -4,8 +4,9 @@ import com.xiyuan.cluster.controller.WorkerController;
 import com.xiyuan.cluster.decoder.PrtDecoder;
 import com.xiyuan.cluster.encoder.PrtEncoder;
 import com.xiyuan.cluster.msg.Messages;
+import com.xiyuan.common.util.FileUtil;
+import com.xiyuan.config.AppInfo;
 import com.xiyuan.config.ClusterCfg;
-import com.xiyuan.spider.manager.TaskManager;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -16,6 +17,7 @@ import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,13 +38,14 @@ public class Worker {
                     .option(ChannelOption.TCP_NODELAY, true)
                     .handler(new ConnectionHandler());
 
-            //周期性向该节点下的所有 phantomjs 进程发送 ping 信息，超过一定时间phantomjs未收到消息则自动停止
+            // 周期性更新 JSpiderHome 目录下的time文件，记录当前时间；
+            // phantomjs周期性扫描这个文件，当时间超过 3000 毫秒则停止phantomjs进程
             group.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
-                    controller.ping();
+                    FileUtil.write(AppInfo.getJspiderHome() + "/time", "" + System.currentTimeMillis(), StandardCharsets.UTF_8);
                 }
-            }, 2000, 4000, TimeUnit.MILLISECONDS);
+            }, 1000, 2000, TimeUnit.MILLISECONDS);
 
             ChannelFuture future = bootstrap.connect(ClusterCfg.cluster_master_host, ClusterCfg.cluster_master_netty_port).sync();
             future.channel().closeFuture().sync();

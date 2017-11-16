@@ -2,6 +2,7 @@ package com.xiyuan.cluster.controller;
 
 import com.xiyuan.cluster.msg.Messages;
 import com.xiyuan.common.util.ClassUtil;
+import com.xiyuan.common.util.FileUtil;
 import com.xiyuan.common.util.HttpUtil;
 import com.xiyuan.config.AppInfo;
 import com.xiyuan.config.ClusterCfg;
@@ -10,6 +11,7 @@ import io.netty.channel.ChannelHandlerContext;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
@@ -72,18 +74,6 @@ public class WorkerController {
                 Files.write(jsFile.toPath(), shareFile.getContent().getBytes("utf-8"));
             } catch (IOException e) {
                 e.printStackTrace();
-            }
-        }
-    }
-
-    public void ping() {
-        for (int port : workerCfg.phantom_ports) {
-            try {
-                String reqUrl = "http://" + workerCfg.host + ":" + port + "/ping";
-                HttpUtil.get(reqUrl);
-            }
-            catch (Exception e) {
-//                e.printStackTrace();
             }
         }
     }
