@@ -45,7 +45,7 @@ public class Worker {
                 public void run() {
                     FileUtil.write(AppInfo.getJspiderHome() + "/time", "" + System.currentTimeMillis(), StandardCharsets.UTF_8);
                 }
-            }, 1000, 2000, TimeUnit.MILLISECONDS);
+            }, 0, 2000, TimeUnit.MILLISECONDS);
 
             ChannelFuture future = bootstrap.connect(ClusterCfg.cluster_master_host, ClusterCfg.cluster_master_netty_port).sync();
             future.channel().closeFuture().sync();
