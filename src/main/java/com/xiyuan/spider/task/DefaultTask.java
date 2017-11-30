@@ -46,7 +46,7 @@ public class DefaultTask {
 
     protected void beforeExcute() {}
 
-    public synchronized void excute(final MasterController.WorkerInfo.PhantomInfo server, final String url, ExecutorService cachedThreadPool) {
+    public synchronized void excute(final MasterController.WorkerInfo.PhantomInfo server, final String url, final int depth, ExecutorService cachedThreadPool) {
         beforeExcute();
         AppInfo.deltaRunningTaskNum(1);
         server.increaseTask();
@@ -87,7 +87,9 @@ public class DefaultTask {
                                 res = callbackMethod.invoke(callbackObject, url, resultObj);
                             }
                             else {
-                                res = callbackMethod.invoke(callbackObject, url, resultObj, json.get("status").getAsJsonObject());
+                                JsonObject status = json.get("status").getAsJsonObject();
+                                status.addProperty("depth", depth);
+                                res = callbackMethod.invoke(callbackObject, url, resultObj, status);
                             }
                         }
                         catch (Exception e) {
@@ -136,7 +138,7 @@ public class DefaultTask {
                     if (res != null) {
                         AddToQueue addToQueue = callM.getAnnotation(AddToQueue.class);
                         if (addToQueue != null) {
-                            QueueManager.addToQueue(res, addToQueue);
+                            QueueManager.addToQueue(res, addToQueue, depth + 1);
                         }
                     }
                 } catch (Exception e) {

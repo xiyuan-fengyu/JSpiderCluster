@@ -226,7 +226,7 @@ public class TaskManager {
                     return;
                 }
                 else if (!task.isExecuted() && !task.isRunning()) {
-                    task.excute(servers.get(0), task.url, cachedThreadPool);
+                    task.excute(servers.get(0), task.url, 0, cachedThreadPool);
                     sortPhantomServers(servers);
                 }
             }
@@ -240,7 +240,7 @@ public class TaskManager {
 
             OnTimeTask onTimeTask = onTimeTasks.get(i);
             if (onTimeTask.getNextExcuteTime() <= now) {
-                onTimeTask.excute(servers.get(0), onTimeTask.url, cachedThreadPool);
+                onTimeTask.excute(servers.get(0), onTimeTask.url, 0, cachedThreadPool);
                 sortPhantomServers(servers);
                 shouldSort = true;
             }
@@ -264,7 +264,7 @@ public class TaskManager {
             if (onMessageTasks.containsKey(queueName)) {
                 OnMessageTask task = onMessageTasks.get(queueName);
                 while (!servers.get(0).isBusy() && !task.isBusy() && (temp = queue.pop()) != null) {
-                    task.excute(servers.get(0), temp.url(), cachedThreadPool);
+                    task.excute(servers.get(0), temp.url(), temp.getDepth(), cachedThreadPool);
                     sortPhantomServers(servers);
                 }
             }

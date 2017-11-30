@@ -15,4 +15,8 @@ public interface Message extends Serializable, Comparable<Message> {
 
     void setPriority(int p);
 
+    int getDepth();
+
+    void setDepth(int depth);
+
 }

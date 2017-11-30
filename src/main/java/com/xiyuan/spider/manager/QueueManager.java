@@ -64,6 +64,10 @@ public class QueueManager {
     }
 
     public static void addToQueue(Object datas, final String queueName, final Class<? extends Queue> queueType, final Class<? extends Filter> filterType) {
+        addToQueue(datas, queueName, queueType, filterType, 0);
+    }
+
+    public static void addToQueue(Object datas, final String queueName, final Class<? extends Queue> queueType, final Class<? extends Filter> filterType, int depth) {
         if (datas != null) {
             Queue queue = queueMap.get(queueName);
             if (queue == null) {
@@ -89,30 +93,34 @@ public class QueueManager {
                 if (datas.getClass().toString().startsWith("class [L")) {
                     Object[] objs = (Object[]) datas;
                     for (Object obj: objs) {
-                        tranAndAdd(queue, obj, filter);
+                        tranAndAdd(queue, obj, filter, depth);
                     }
                 }
                 else if (datas instanceof Iterable) {
                     Iterator it = ((Iterable) datas).iterator();
                     while (it.hasNext()) {
                         Object obj = it.next();
-                        tranAndAdd(queue, obj, filter);
+                        tranAndAdd(queue, obj, filter, depth);
                     }
                 }
                 else {
-                    tranAndAdd(queue, datas, filter);
+                    tranAndAdd(queue, datas, filter, depth);
                 }
             }
         }
     }
 
     public static void addToQueue(Object datas, AddToQueue anno) {
+        addToQueue(datas, anno, 0);
+    }
+
+    public static void addToQueue(Object datas, AddToQueue anno, int depth) {
         if (anno != null) {
             addToQueue(datas, anno.name(), anno.type(), anno.filter());
         }
     }
 
-    private static void tranAndAdd(Queue queue, Object obj, Filter filter) {
+    private static void tranAndAdd(Queue queue, Object obj, Filter filter, int depth) {
         Message msg = null;
         if (obj instanceof Message) {
             msg = (Message) obj;
@@ -126,6 +134,10 @@ public class QueueManager {
 
         if (msg == null) {
             return;
+        }
+
+        if (msg.getDepth() < depth) {
+            msg.setDepth(depth);
         }
 
         if (filter == null) {

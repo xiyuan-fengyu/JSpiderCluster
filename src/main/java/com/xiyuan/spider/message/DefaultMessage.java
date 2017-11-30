@@ -22,6 +22,8 @@ public class DefaultMessage implements Message {
 
     private int priority;
 
+    private int depth;
+
     private static final Gson gson = new Gson();
 
     private HashMap<String, Object> userDatas = new HashMap<>();
@@ -90,6 +92,16 @@ public class DefaultMessage implements Message {
     @Override
     public void setPriority(int p) {
         this.priority = p;
+    }
+
+    @Override
+    public int getDepth() {
+        return depth;
+    }
+
+    @Override
+    public void setDepth(int depth) {
+        this.depth = depth;
     }
 
     @Override
