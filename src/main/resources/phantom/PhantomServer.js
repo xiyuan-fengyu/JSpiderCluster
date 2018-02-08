@@ -41,7 +41,8 @@ try {
         };
     }
 
-    phantom.pageSettings = config.page;
+    phantom.pageSettings = config.page || {};
+    phantom.logSettings = config.log || {};
     var cookies = config.cookies;
     for (var i = 0, len = cookies.length; i < len; i++) {
         addCookie(cookies[i]);
@@ -402,51 +403,17 @@ function setPageListener(page, params) {
             networkRequest.abort();
         }
         else {
-            // console.log("\nrequest: " + JSON.stringify(networkRequest) + "\n" + JSON.stringify(requestData) + "\n");
-            if (requestData.url.match(/http:\/\/cms-bucket.nosdn.127.net\/.*\.jpg/)) {
-                requestData.headers = [
-                    {
-                        name: "Accept",
-                        value: "image/webp,image/apng,image/*,*/*;q=0.8"
-                    },
-                    {
-                        name: "Accept-Encoding",
-                        value: "gzip, deflate"
-                    },
-                    {
-                        name: "Accept-Language",
-                        value: "zh-CN,zh;q=0.8"
-                    },
-                    {
-                        name: "Cache-Control",
-                        value: "no-cache"
-                    },
-                    {
-                        name: "Connection",
-                        value: "keep-alive"
-                    },
-                    {
-                        name: "Host",
-                        value: "cms-bucket.nosdn.127.net"
-                    },
-                    {
-                        name: "Pragma",
-                        value: "no-cache"
-                    },
-                    {
-                        name: "Referer",
-                        value: "http://news.163.com/17/0623/16/CNKKOMQA00018AOP.html"
-                    },
-                    {
-                        name: "User-Agent",
-                        value: "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36"
-                    }
-                ];
+            if (phantom.logSettings.onResourceRequested) {
+                console.log("\nrequest: " + JSON.stringify(networkRequest) + "\n" + JSON.stringify(requestData) + "\n");
             }
         }
     };
 
     page.onResourceReceived = function(response) {
+        if (phantom.logSettings.onResourceReceived) {
+            console.log("\nresponse: " + JSON.stringify(response) + "\n");
+        }
+
         page.evaluate(function (response) {
             window.resources = window.resources || [];
             window.resources.push(response);

@@ -21,6 +21,11 @@
     }
   },
 
+  "log": {
+    "onResourceRequested": false,
+    "onResourceReceived": false
+  },
+  
   "cookies": [
     {
       "domain": "baidu.com",
