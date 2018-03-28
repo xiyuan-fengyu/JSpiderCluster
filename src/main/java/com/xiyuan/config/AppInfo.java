@@ -95,11 +95,11 @@ public class AppInfo {
         outPath = jspiderHome + "/out";
 
         //将scrPath提娜佳到classPath中
-        try {
-            LoadFromJar.addUrlsToClassPath(Arrays.asList(new File(srcPath).toURI().toURL()));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            LoadFromJar.addUrlsToClassPath(Arrays.asList(new File(srcPath).toURI().toURL()));
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        }
 
         System.out.println();
     }

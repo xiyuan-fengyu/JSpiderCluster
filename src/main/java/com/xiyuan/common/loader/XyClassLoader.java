@@ -51,20 +51,23 @@ public class XyClassLoader extends URLClassLoader {
                     if (flieNameLower.endsWith(".class")) {
                         String className = abs.substring(rootDir.length() + 1, abs.length() - 6).replace(File.separatorChar, '.');
                         try {
+//                            System.out.println("loadClass: " + className);
                             classList.add(loadClass(className));
                         } catch (ClassNotFoundException e) {
                             e.printStackTrace();
                         }
                     }
-                    else if (flieNameLower.endsWith(".jar")) {
-                        classList.addAll(loadFromJar(abs));
-                    }
+                    // 当Jar中有动态加载其他jar包的时候，如果jar不存在可能导致 java.lang.ClassNotFoundException: 异常；所以暂时不支持从jar中扫描task任务
+//                    else if (flieNameLower.endsWith(".jar")) {
+//                        classList.addAll(loadFromJar(abs));
+//                    }
                 }
             }
         }
     }
 
     private List<Class> loadFromJar(String jarPath) {
+        System.out.println("loadFromJar: " + jarPath);
         List<Class> classList = new ArrayList<>();
         try {
             try (JarInputStream in = new JarInputStream(new FileInputStream(jarPath))) {
@@ -73,7 +76,8 @@ public class XyClassLoader extends URLClassLoader {
                     String name = jarEntry.getName();
                     if (name.endsWith(".class")) {
                         String classPath = name.replace('/', '.').substring(0, name.length() - 6);
-                        classList.add(loadClass(classPath));
+//                        System.out.println("loadClassInJar: " + classPath);
+                        classList.add(Class.forName(classPath));
                     }
                 }
             }

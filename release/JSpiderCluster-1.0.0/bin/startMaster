@@ -1,13 +1,15 @@
 #!/bin/sh
+masterIp=""
 while read line
 do
     if [ `expr match "$line" "^cluster.master.host="` -gt 0 ]; then
         arr=($(echo $line | tr '=' '\n'))
         masterIp=${arr[1]}
-        ssh $masterIp "
+    fi
+done < $JSPIDER_HOME/config/cluster.properties
+
+ssh $masterIp "
             source /etc/profile
             cd \$JSPIDER_HOME/bin
             nohup java -jar JSpiderCluster.jar master >\$JSPIDER_HOME/logs/master.txt 2>\$JSPIDER_HOME/logs/master.txt &
         " &
-    fi
-done < $JSPIDER_HOME/config/cluster.properties
