@@ -1,5 +1,13 @@
 ## JSpiderCluster  
 
+#### Warning
+<html>
+  <span style="color: #ff490d;font-weight: bold;">
+    由于各种原因，这个项目不再维护，推荐使用
+    <a href="https://github.com/xiyuan-fengyu/ppspider" target="_blank">这个新框架</a>
+  </span>
+</html>  
+
 Java + phantomjs 实现的一个分布式爬虫。  
 java部分主要进行集群的管理，任务队列的管理和任务分发，支持jar和class热发布。  
 phantomjs执行实际的抓取任务，抓取逻辑采用js编写，可以方便的导入jquery，
