@@ -1,13 +1,9 @@
 ## JSpiderCluster  
 
-<h2>
-```diff
-- Warning
-```
-</h2>
+#### Warning
 <span style="color: red">
   由于各种原因，这个项目不再维护，推荐使用
-  <a href="https://github.com/xiyuan-fengyu/ppspider" target="_blank">这个新的框架</a>
+  <a href="https://github.com/xiyuan-fengyu/ppspider">这个新的框架</a>
 </span>
 
 #### 简介
